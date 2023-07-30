@@ -1,3 +1,4 @@
+migrations/postgres/versions
 .idea
 
 # Byte-compiled / optimized / DLL files
