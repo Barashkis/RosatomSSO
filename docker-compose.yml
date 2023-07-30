@@ -1,0 +1,48 @@
+version: "3.1"
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: $POSTGRES_NAME
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    restart: always
+    ports:
+      - '5432:5432'
+    networks:
+      - botnet
+    volumes:
+      - ./postgres:/var/lib/postgresql
+
+  redis:
+    container_name: redis
+    image: bitnami/redis:latest
+    environment:
+      REDIS_PASSWORD: $REDIS_PASSWORD
+    restart: always
+    ports:
+      - '6379:6379'
+    networks:
+      - botnet
+
+  rosatom_sso:
+    container_name: rosatom_sso
+    build:
+      context: .
+    command: python app.py
+    restart: always
+    networks:
+      - botnet
+    env_file:
+      - ".env"
+    volumes:
+      - .:/src
+    depends_on:
+      - postgres
+      - redis
+
+networks:
+  botnet:
+    driver: bridge
