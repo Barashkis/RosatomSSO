@@ -36,7 +36,7 @@ services:
     networks:
       - botnet
     env_file:
-      - ".env"
+      - '.env'
     volumes:
       - .:/src
     depends_on:
