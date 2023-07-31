@@ -20,10 +20,10 @@ async def on_startup(dp: Dispatcher):
     import filters
     import middlewares
 
-    await set_default_commands(dp)
-
     PostgresBase.metadata.create_all(postgres_engine)
     run_migrations(PostgresSession, 'postgres')
+
+    await set_default_commands(dp)
 
     middlewares.setup(dp)
     filters.setup(dp)
