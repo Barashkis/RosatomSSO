@@ -39,7 +39,7 @@ async def list_activities_to_edit(call: types.CallbackQuery, state: FSMContext):
             await call.message.edit_reply_markup()
             await call.message.answer(
                 'Список доступных для редактирования активностей. Чтобы выбрать активность, '
-                'отправьте боту ее порядковый номер\n\n' + activities_text,
+                'отправьте боту ее порядковый номер.\n\n' + activities_text,
             )
             await state.set_state('send_activity_to_edit_id')
         else:
@@ -104,7 +104,7 @@ async def receive_new_activity_name(message: types.Message, state: FSMContext):
             activity.name = new_activity_name
 
             await message.answer(
-                'Название активности успешно обновлено\n\n'
+                'Название активности успешно обновлено.\n\n'
                 f'{activity.name} (выполнение до '
                 f'{datetime.strftime(activity.expires_at.astimezone(tz), "%d.%m")})'
                 f' - {activity.points} баллов',
@@ -144,7 +144,7 @@ async def receive_activity_points(message: types.Message, state: FSMContext):
             activity.points = points
 
             await message.answer(
-                'Количество очков за активность успешно обновлено\n\n'
+                'Количество очков за активность успешно обновлено.\n\n'
                 f'{activity.name} (выполнение до {datetime.strftime(activity.expires_at.astimezone(tz), "%d.%m")})'
                 f' - {activity.points} баллов',
                 reply_markup=edit_activity_kb(activity_id, is_actual=activity.is_actual),
@@ -178,7 +178,7 @@ async def receive_activity_date(message: types.Message, state: FSMContext):
                 activity.expires_at = f'{datetime.now().astimezone(tz).year}-{month}-{day} 23:59:59+3'
 
             await message.answer(
-                'Дата, до которой активность будет действительна, успешно обновлена\n\n'
+                'Дата, до которой активность будет действительна, успешно обновлена.\n\n'
                 f'{activity.name} (выполнение до {date})'
                 f' - {activity.points} баллов',
                 reply_markup=edit_activity_kb(activity_id, is_actual=activity.is_actual),

@@ -51,7 +51,7 @@ async def available_activities(call: types.CallbackQuery, state: FSMContext):
             await call.message.edit_reply_markup()
             await call.message.answer(
                 'Вот список активностей, в которых ты можешь принять участие. '
-                'Если ты хочешь зафиксировать выполнение, пришли в чат цифру, которая соответствует действию\n\n'
+                'Если ты хочешь зафиксировать выполнение, пришли в чат цифру, которая соответствует действию.\n\n'
                 'Список активностей:\n\n' + activities_text,
                 reply_markup=cancel_choosing_activity_kb(),
             )
@@ -76,7 +76,7 @@ async def cancel_choosing_activity(call: types.CallbackQuery, state: FSMContext)
     else:
         await call.message.edit_text(
             'Ты уже начал процесс фиксации выполнения активности. '
-            'Чтобы получить доступ к меню, надо его завершить\n\n' + call.message.text,
+            'Чтобы получить доступ к меню, надо его завершить.\n\n' + call.message.text,
         )
 
 
@@ -99,7 +99,7 @@ async def receive_activity_id(message: types.Message, state: FSMContext):
             if 1 <= activity_id <= activities_count:
                 activity = activities[activity_id - 1]
                 await message.answer(
-                    f'Отлично! Ты выбрал активность {activity.name!r}\n\n'
+                    f'Отлично! Ты выбрал активность {activity.name!r}.\n\n'
                     'Пришли в чат файл, подтверждающий выполнение действия. '
                     'Это может быть фотография с мероприятия, скриншот просмотренного видео и так далее. '
                     'Тип файла может быть одним из следующих:\n\n'
