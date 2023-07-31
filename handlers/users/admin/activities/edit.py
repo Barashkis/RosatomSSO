@@ -177,13 +177,13 @@ async def receive_activity_date(message: types.Message, state: FSMContext):
                 activity = session.get(Activity, activity_id)
                 activity.expires_at = f'{datetime.now().astimezone(tz).year}-{month}-{day} 23:59:59+3'
 
-            await state.finish()
             await message.answer(
                 'Дата, до которой активность будет действительна, успешно обновлена\n\n'
                 f'{activity.name} (выполнение до {date})'
                 f' - {activity.points} баллов',
                 reply_markup=edit_activity_kb(activity_id, is_actual=activity.is_actual),
             )
+            await state.finish()
     else:
         await message.answer('Отправленная Вами дата имеет неправильный формат. Повторите попытку еще раз')
 

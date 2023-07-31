@@ -68,11 +68,11 @@ async def cancel_choosing_activity(call: types.CallbackQuery, state: FSMContext)
     logger.debug(f'User {call.from_user.id} enters cancel_choosing_activity handler')
 
     if await state.get_state() == 'init_confirmation':
-        await state.finish()
         await call.message.edit_text(
             'Ты в главном меню. Если захочешь вернуться сюда, воспользуйся командой /menu',
             reply_markup=common_user_main_menu_kb(),
         )
+        await state.finish()
     else:
         await call.message.edit_text(
             'Ты уже начал процесс фиксации выполнения активности. '
@@ -169,12 +169,12 @@ async def receive_comment(message: types.Message, state: FSMContext):
                 }
             )
 
-    await state.finish()
     await message.answer(
         'Отлично! Теперь дело за модераторами. Они проверят твой ответ и примут решение, засчитывать его или нет. '
         'Когда проверка закончится, тебе придет уведомление',
         reply_markup=common_user_main_menu_kb(),
     )
+    await state.finish()
 
 
 @dp.message_handler(state='send_comment', content_types=ContentType.ANY)
