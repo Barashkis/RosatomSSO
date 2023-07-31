@@ -20,15 +20,19 @@ def admin_main_menu_kb() -> InlineKeyboardMarkup:
         ),
         InlineKeyboardButton(
             text='Отклоненные анкеты',
-            callback_data=custom_cd('denied_requests', keys=('page',)).new(page=1, row=1, column=0),
+            callback_data=custom_cd('denied_requests', keys=('page',)).new(page=1, row=2, column=0),
         ),
         InlineKeyboardButton(
             text='Непроверенные активности',
-            callback_data=custom_cd('unchecked_confirmations', keys=('page',)).new(page=1, row=2, column=0),
+            callback_data=custom_cd('unchecked_confirmations', keys=('page',)).new(page=1, row=3, column=0),
         ),
         InlineKeyboardButton(
             text='Активности (модерация)',
-            callback_data=custom_cd('moderate_activities').new(row=3, column=0),
+            callback_data=custom_cd('moderate_activities').new(row=4, column=0),
+        ),
+        InlineKeyboardButton(
+            text='Добавить модератора',
+            callback_data=custom_cd('add_moderator').new(row=5, column=0),
         )
     )
 
