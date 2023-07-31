@@ -1,5 +1,6 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram.types import ContentType
 
 from database import Admin
 from keyboards import (
@@ -23,16 +24,39 @@ async def add_moderator(call: types.CallbackQuery, state: FSMContext):
     await state.set_state('send_message_from_new_moderator')
 
 
-@dp.message_handler(state='send_message_from_new_moderator')
+@dp.message_handler(content_types=ContentType.ANY, state='send_message_from_new_moderator')
 async def receive_message_from_new_moderator(message: types.Message, state: FSMContext):
-    new_admin = message.forward_from.id
-    logger.debug(f'Admin {message.from_user.id} enters receive_message_from_new_moderator with {new_admin=}')
+    user_id = message.from_user.id
+    if message_from_new_admin := message.forward_from:
+        if message_from_new_admin.is_bot:
+            logger.debug(f'Admin {user_id} enters receive_message_from_new_moderator with message from bot')
+            await message.answer(
+                'Сообщение должно принадлежать человеку, а не боту. Повторите попытку еще раз',
+            )
+        else:
+            new_admin_id = message_from_new_admin.id
+            logger.debug(f'Admin {user_id} enters receive_message_from_new_moderator with {new_admin_id=}')
 
-    with PostgresSession.begin() as session:
-        session.add(Admin(id=new_admin))
+            with PostgresSession.begin() as session:
+                admin_ids = [admin.id for admin in session.query(Admin).all()]
+                if new_admin_id not in admin_ids:
+                    session.add(Admin(id=new_admin_id))
 
-    await message.answer(
-        'Пользователь был добавлен в список модераторов бота',
-        reply_markup=admin_main_menu_kb(),
-    )
-    await state.finish()
+                    await message.answer(
+                        'Пользователь был добавлен в список модераторов бота',
+                        reply_markup=admin_main_menu_kb(),
+                    )
+                    await state.finish()
+                else:
+                    logger.debug(
+                        f'Admin {user_id} enters receive_message_from_new_moderator with '
+                        f'message from already registered admin with {new_admin_id=}'
+                    )
+                    await message.answer(
+                        'Данный пользователь уже является модератором. Выберите, пожалуйста, другого пользователя',
+                    )
+    else:
+        logger.debug(f'Admin {user_id} enters receive_message_from_new_moderator with not forwarded message')
+        await message.answer(
+            'Необходимо переслать сообщение другого пользователя. Повторите попытку еще раз',
+        )
