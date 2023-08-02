@@ -3,6 +3,7 @@ from datetime import datetime
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram.utils.markdown import quote_html
 
 from config import tz
 from database import Activity
@@ -54,8 +55,9 @@ async def receive_activity_points(message: types.Message, state: FSMContext):
 
     await update_state_data(state, 'activity_data', points=points)
     await message.answer(
-        'Напишите, до какой даты действительна данная активность, в формате <день>.<месяц>. Например, 31.08',
-        parse_mode=types.ParseMode.MARKDOWN,
+        quote_html(
+            'Напишите, до какой даты действительна данная активность, в формате <день>.<месяц>. Например, 31.08'
+        ),
     )
 
     await state.set_state('send_activity_expiration_date')

@@ -4,6 +4,7 @@ from typing import Dict
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram.utils.markdown import quote_html
 
 from config import tz
 from database import Activity
@@ -157,7 +158,11 @@ async def edit_activity_date(call: types.CallbackQuery, callback_data: Dict, sta
     logger.debug(f'Admin {call.from_user.id} enters edit_activity_date handler')
 
     await call.message.edit_reply_markup()
-    await call.message.answer('Введите новую дату, до которой активность будет действительна')
+    await call.message.answer(
+        quote_html(
+            'Введите новую дату, до которой активность будет действительна, в формате <день>.<месяц>. Например, 31.08'
+        ),
+    )
 
     await state.set_state('send_new_activity_date')
     async with state.proxy() as data:
