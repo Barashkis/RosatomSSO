@@ -78,3 +78,8 @@ async def menu(message: types.Message):
         else:
             await message.answer('Ты не зарегистрирован в боте. Чтобы зарегистрироваться, введи команду /start')
             logger.debug(f'Unregistered user {user_id} uses /menu command')
+
+
+@dp.message_handler(Command('show_my_id'), state='*')
+async def show_telegram_user_id(message: types.Message):
+    await message.answer(message.from_user.id)
