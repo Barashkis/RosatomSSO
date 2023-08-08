@@ -3,6 +3,7 @@ from .add_new_admin import dp
 from .commands import dp
 from .confirmations import dp
 from .inspect_users import dp
+from .mailing import dp
 from .requests import dp
 
 

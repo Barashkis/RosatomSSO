@@ -33,7 +33,11 @@ def admin_main_menu_kb() -> InlineKeyboardMarkup:
         InlineKeyboardButton(
             text='Добавить модератора',
             callback_data=custom_cd('add_moderator').new(row=5, column=0),
-        )
+        ),
+        InlineKeyboardButton(
+            text='Рассылка',
+            callback_data=custom_cd('mailing').new(row=6, column=0),
+        ),
     )
 
     return kb
@@ -105,6 +109,35 @@ def edit_activity_kb(activity_id: int, is_actual: bool) -> InlineKeyboardMarkup:
             text='Назад',
             callback_data=custom_cd('moderate_activities').new(
                 row=4,
+                column=0,
+            )
+        ),
+    )
+
+    return kb
+
+
+def mailing_kb() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(row_width=1)
+    kb.add(
+        InlineKeyboardButton(
+            text='Всем бойцам ССО',
+            callback_data=custom_cd('mailing_all_moderators').new(
+                row=0,
+                column=0,
+            )
+        ),
+        InlineKeyboardButton(
+            text='Всем модераторам',
+            callback_data=custom_cd('mailing_all_common_users').new(
+                row=1,
+                column=0,
+            )
+        ),
+        InlineKeyboardButton(
+            text='Назад',
+            callback_data=custom_cd('admin_menu').new(
+                row=2,
                 column=0,
             )
         ),

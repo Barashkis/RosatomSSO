@@ -91,3 +91,5 @@ async def catch_errors(update: Update, exception):
         logger.debug(f'User {message.from_user.id} got an exception: {exception!r}')
 
         await message.answer('Вы ввели неправильное количество очков. Это должно быть положительно число')
+    else:
+        logger.debug(f'User got an exception: {exception!r}')
