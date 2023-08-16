@@ -37,6 +37,7 @@ async def inspect_users(call: types.CallbackQuery, callback_data: Dict):
                 user.statistic.last_pressed_button if user.statistic.last_pressed_button else 'нажатий не было'
             )
             await call.message.edit_text(
+                f'Пользователей в системе: {len(to_inspect)}\n\n'
                 '<i>Данные о пользователе</i>\n\n'
                 f'<b>Имя в Telegram:</b> {username}\n'
                 f'<b>Фамилия и имя:</b> {user.wr_fullname}\n'
