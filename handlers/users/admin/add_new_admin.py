@@ -20,7 +20,7 @@ async def add_new_admin(new_admin_id: int, message: types.Message, state: FSMCon
         if new_admin_id not in admin_ids:
             session.add(Admin(id=new_admin_id))
 
-            logger.debug(f'Admin {user_id} enters receive_message_from_new_moderator with {new_admin_id=}')
+            logger.debug(f'Admin {user_id} enters receive_message_from_new_admin with {new_admin_id=}')
             await message.answer(
                 'Пользователь был добавлен в список модераторов бота',
                 reply_markup=admin_main_menu_kb(),
@@ -28,7 +28,7 @@ async def add_new_admin(new_admin_id: int, message: types.Message, state: FSMCon
             await state.finish()
         else:
             logger.debug(
-                f'Admin {user_id} enters receive_message_from_new_moderator with '
+                f'Admin {user_id} enters receive_message_from_new_admin with '
                 f'message from already registered admin with {new_admin_id=}'
             )
             await message.answer(
@@ -36,9 +36,9 @@ async def add_new_admin(new_admin_id: int, message: types.Message, state: FSMCon
             )
 
 
-@dp.callback_query_handler(custom_cd('add_moderator').filter(), state='*')
-async def add_moderator(call: types.CallbackQuery, state: FSMContext):
-    logger.debug(f'Admin {call.from_user.id} enters add_moderator')
+@dp.callback_query_handler(custom_cd('add_admin').filter(), state='*')
+async def add_admin(call: types.CallbackQuery, state: FSMContext):
+    logger.debug(f'Admin {call.from_user.id} enters add_admin')
 
     await call.message.edit_reply_markup()
     await call.message.answer(
@@ -49,15 +49,15 @@ async def add_moderator(call: types.CallbackQuery, state: FSMContext):
         'сообщение "Назад" (без кавычек)'
     )
 
-    await state.set_state('send_message_from_new_moderator')
+    await state.set_state('send_message_from_new_admin')
 
 
-@dp.message_handler(content_types=types.ContentType.ANY, state='send_message_from_new_moderator')
-async def receive_message_from_new_moderator(message: types.Message, state: FSMContext):
+@dp.message_handler(content_types=types.ContentType.ANY, state='send_message_from_new_admin')
+async def receive_message_from_new_admin(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     if new_admin := message.forward_from:
         if new_admin.is_bot:
-            logger.debug(f'Admin {user_id} enters receive_message_from_new_moderator with message from bot')
+            logger.debug(f'Admin {user_id} enters receive_message_from_new_admin with message from bot')
             await message.answer(
                 'Сообщение должно принадлежать человеку, а не боту. Повторите попытку еще раз',
             )
@@ -69,7 +69,7 @@ async def receive_message_from_new_moderator(message: types.Message, state: FSMC
         await message.answer('Процесс добавления нового модератора был отменен', reply_markup=admin_main_menu_kb())
         await state.finish()
     else:
-        logger.debug(f'Admin {user_id} enters receive_message_from_new_moderator with not forwarded message')
+        logger.debug(f'Admin {user_id} enters receive_message_from_new_admin with not forwarded message')
         await message.answer(
             'Необходимо переслать сообщение другого пользователя либо прислать его числовой идентификатор. '
             'Повторите попытку еще раз',

@@ -16,9 +16,9 @@ from loader import (
 from logger import logger
 
 
-@dp.callback_query_handler(custom_cd('mailing_all_moderators').filter(), state='*')
-async def mailing_all_moderators(call: types.CallbackQuery, state: FSMContext):
-    logger.debug(f'Admin {call.from_user.id} enters mailing_all_moderators handler')
+@dp.callback_query_handler(custom_cd('mailing_all_admins').filter(), state='*')
+async def mailing_all_admins(call: types.CallbackQuery, state: FSMContext):
+    logger.debug(f'Admin {call.from_user.id} enters mailing_all_admins handler')
 
     await call.message.edit_reply_markup()
     await call.message.answer(
@@ -26,12 +26,12 @@ async def mailing_all_moderators(call: types.CallbackQuery, state: FSMContext):
         'Если Вы хотите выйти из режима рассылки, пришлите боту '
         'сообщение "Назад" (без кавычек)'
     )
-    await state.set_state('send_message_to_all_moderators')
+    await state.set_state('send_message_to_all_admins')
 
 
-@dp.message_handler(state='send_message_to_all_moderators')
-async def receive_message_to_all_moderators(message: types.Message, state: FSMContext):
-    logger.debug(f'Admin {message.from_user.id} enters receive_message_to_all_moderators handler')
+@dp.message_handler(state='send_message_to_all_admins')
+async def receive_message_to_all_admins(message: types.Message, state: FSMContext):
+    logger.debug(f'Admin {message.from_user.id} enters receive_message_to_all_admins handler')
 
     message_text = message.text
     if message_text.lower() == 'назад':

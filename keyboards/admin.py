@@ -32,7 +32,7 @@ def admin_main_menu_kb() -> InlineKeyboardMarkup:
         ),
         InlineKeyboardButton(
             text='Добавить модератора',
-            callback_data=custom_cd('add_moderator').new(row=5, column=0),
+            callback_data=custom_cd('add_admin').new(row=5, column=0),
         ),
         InlineKeyboardButton(
             text='Рассылка',
@@ -122,7 +122,7 @@ def mailing_kb() -> InlineKeyboardMarkup:
     kb.add(
         InlineKeyboardButton(
             text='Всем бойцам ССО',
-            callback_data=custom_cd('mailing_all_moderators').new(
+            callback_data=custom_cd('mailing_all_admins').new(
                 row=0,
                 column=0,
             )

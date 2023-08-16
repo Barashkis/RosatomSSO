@@ -19,4 +19,4 @@ async def other_messages(message: types.Message):
 async def other_callback_queries(call: types.Message):
     logger.debug(f'User {call.from_user.id} enters other_callback_queries')
 
-    await call.answer('Сейчас эта опция не доступна... Возможно, в данный момент бот ожидает сообщения')
+    await call.answer('В данный момент эта опция не доступна')
