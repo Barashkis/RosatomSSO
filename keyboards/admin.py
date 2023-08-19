@@ -70,6 +70,30 @@ def confirmations_kb(user_id: int, confirmation_id: int) -> InlineKeyboardMarkup
     return kb
 
 
+def deny_request_kb(user_id: int) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(row_width=1)
+    kb.add(
+        InlineKeyboardButton(
+            text='С комментарием',
+            callback_data=custom_cd('deny_request_with_comment', keys=('user_id',)).new(
+                user_id=user_id,
+                row=0,
+                column=0,
+            )
+        ),
+        InlineKeyboardButton(
+            text='Без комментария',
+            callback_data=custom_cd('deny_request_without_comment', keys=('user_id',)).new(
+                user_id=user_id,
+                row=0,
+                column=0,
+            )
+        ),
+    )
+
+    return kb
+
+
 def edit_activity_kb(activity_id: int, is_actual: bool) -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup(row_width=1)
     kb.add(
@@ -188,7 +212,11 @@ def recover_request_kb(user_id: int) -> InlineKeyboardMarkup:
     kb.add(
         InlineKeyboardButton(
             text='Восстановить',
-            callback_data=custom_cd('recover_user', keys=('user_id',)).new(user_id=user_id, row=0, column=0)
+            callback_data=custom_cd('recover_user', keys=('user_id',)).new(
+                user_id=user_id,
+                row=0,
+                column=0,
+            ),
         ),
     )
 

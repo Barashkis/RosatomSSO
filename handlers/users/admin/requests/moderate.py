@@ -1,6 +1,7 @@
 from typing import Dict
 
 from aiogram import types
+from aiogram.dispatcher import FSMContext
 
 from config import moderation_status
 from database import (
@@ -13,6 +14,7 @@ from keyboards import (
     custom_cd,
     requests_kb,
 )
+from keyboards.admin import deny_request_kb
 from loader import (
     PostgresSession,
     bot,
@@ -90,6 +92,17 @@ async def deny_request(call: types.CallbackQuery, callback_data: Dict):
     request_user_id = int(callback_data['user_id'])
     logger.debug(f'Admin {call.from_user.id} enters deny_request handler with {request_user_id=}')
 
+    await call.message.edit_text(
+        'Выберите нужный вариант отклонения заявки',
+        reply_markup=deny_request_kb(request_user_id),
+    )
+
+
+@dp.callback_query_handler(custom_cd('deny_request_without_comment', keys=('user_id',)).filter(), state='*')
+async def deny_request_without_comment(call: types.CallbackQuery, callback_data: Dict):
+    request_user_id = int(callback_data['user_id'])
+    logger.debug(f'Admin {call.from_user.id} enters deny_request_without_comment handler with {request_user_id=}')
+
     await dp.current_state(user=request_user_id, chat=request_user_id).finish()
     await bot.send_message(
         request_user_id,
@@ -101,6 +114,43 @@ async def deny_request(call: types.CallbackQuery, callback_data: Dict):
         session.query(CommonUser).filter_by(id=request_user_id).update({'status': 'Анкета отклонена'})
 
     await call.message.edit_text(
+        'Заявка была успешно отклонена',
+        reply_markup=admin_main_menu_kb(),
+    )
+
+
+@dp.callback_query_handler(custom_cd('deny_request_with_comment', keys=('user_id',)).filter(), state='*')
+async def deny_request_with_comment(call: types.CallbackQuery, state: FSMContext, callback_data: Dict):
+    request_user_id = int(callback_data['user_id'])
+    logger.debug(f'Admin {call.from_user.id} enters deny_request_with_comment handler with {request_user_id=}')
+
+    async with state.proxy() as data:
+        data["request_user_id"] = request_user_id
+
+    await call.message.edit_reply_markup()
+    await call.message.answer('Напишите комментарий')
+    await state.set_state('send_deny_request_comment')
+
+
+@dp.message_handler(state='send_deny_request_comment')
+async def receive_deny_request_comment(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        request_user_id = data["request_user_id"]
+    logger.debug(f'Admin {message.from_user.id} enters receive_deny_request_comment handler with {request_user_id=}')
+
+    await dp.current_state(user=request_user_id, chat=request_user_id).finish()
+    await bot.send_message(
+        request_user_id,
+        'К сожалению, модераторы не нашли тебя в списке участников. '
+        'Если ты уверен, что произошла ошибка, напиши нам в личные сообщения '
+        '<a href="https://vk.com/im?sel=-25236132">"Карьеры в Росатоме"</a>\n\n'
+        '<i>Комментарий от модератора:</i>\n\n'
+        f'{message.text}',
+    )
+    with PostgresSession.begin() as session:
+        session.query(CommonUser).filter_by(id=request_user_id).update({'status': 'Анкета отклонена'})
+
+    await message.answer(
         'Заявка была успешно отклонена',
         reply_markup=admin_main_menu_kb(),
     )
