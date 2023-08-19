@@ -1,6 +1,7 @@
 from typing import Dict
 
 from aiogram import types
+from aiogram.dispatcher import FSMContext
 
 from database import (
     CommonUser,
@@ -11,6 +12,7 @@ from keyboards import (
     confirmations_kb,
     custom_cd,
 )
+from keyboards.admin import deny_confirmation_kb
 from loader import (
     PostgresSession,
     bot,
@@ -93,15 +95,43 @@ async def approve_confirmation(call: types.CallbackQuery, callback_data: Dict):
 @dp.callback_query_handler(custom_cd('deny_confirmation', keys=('user_id', 'confirmation_id')).filter(), state='*')
 async def deny_confirmation(call: types.CallbackQuery, callback_data: Dict):
     confirmation_id = int(callback_data['confirmation_id'])
-    logger.debug(f'Admin {call.from_user.id} enters deny_confirmation handler with {confirmation_id=}')
+    activity_user_id = int(callback_data['user_id'])
+    logger.debug(
+        f'Admin {call.from_user.id} enters deny_confirmation '
+        f'handler with {confirmation_id=} of user {activity_user_id}'
+    )
+
+    await call.message.edit_reply_markup()
+    await call.message.answer(
+        'Выберите нужный вариант отклонения активности',
+        reply_markup=deny_confirmation_kb(activity_user_id, confirmation_id),
+    )
+
+
+@dp.callback_query_handler(
+    custom_cd(
+        'deny_confirmation_without_comment',
+        keys=('user_id', 'confirmation_id')
+    ).filter(),
+    state='*'
+)
+async def deny_confirmation_without_comment(call: types.CallbackQuery, callback_data: Dict):
+    confirmation_id = int(callback_data['confirmation_id'])
+    activity_user_id = int(callback_data['user_id'])
+    logger.debug(
+        f'Admin {call.from_user.id} enters deny_confirmation_without_comment '
+        f'handler with {confirmation_id=} of user {activity_user_id}'
+    )
 
     with PostgresSession.begin() as session:
         confirmation = session.get(Confirmation, confirmation_id)
+        confirmation.is_checked = True
+
         activity = confirmation.activity
         confirmation.user.status = f'Получил отказ в выполнении активности {activity.name!r}'
 
         await bot.send_message(
-            int(callback_data['user_id']),
+            activity_user_id,
             f'К сожалению, твое выполнение активности {activity.name!r} было отклонено...'
         )
 
@@ -110,6 +140,61 @@ async def deny_confirmation(call: types.CallbackQuery, callback_data: Dict):
         'Активность была успешно отклонена',
         reply_markup=admin_main_menu_kb(),
     )
+
+
+@dp.callback_query_handler(
+    custom_cd(
+        'deny_confirmation_with_comment',
+        keys=('user_id', 'confirmation_id')
+    ).filter(),
+    state='*'
+)
+async def deny_confirmation_with_comment(call: types.CallbackQuery, state: FSMContext, callback_data: Dict):
+    confirmation_id = int(callback_data['confirmation_id'])
+    activity_user_id = int(callback_data['user_id'])
+    logger.debug(
+        f'Admin {call.from_user.id} enters deny_confirmation_with_comment '
+        f'handler with {confirmation_id=} of user {activity_user_id}'
+    )
+
+    async with state.proxy() as data:
+        data['activity_user_id'] = activity_user_id
+        data['confirmation_id'] = confirmation_id
+
+    await call.message.edit_reply_markup()
+    await call.message.answer('Напишите комментарий')
+    await state.set_state('send_deny_activity_comment')
+
+
+@dp.message_handler(state='send_deny_activity_comment')
+async def receive_deny_activity_comment(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        activity_user_id = data['activity_user_id']
+        confirmation_id = data['confirmation_id']
+    logger.debug(
+        f'Admin {message.from_user.id} enters receive_deny_activity_comment '
+        f'handler with {confirmation_id=} of user {activity_user_id}'
+    )
+
+    with PostgresSession.begin() as session:
+        confirmation = session.get(Confirmation, confirmation_id)
+        confirmation.is_checked = True
+
+        activity = confirmation.activity
+        confirmation.user.status = f'Получил отказ в выполнении активности {activity.name!r}'
+
+        await bot.send_message(
+            activity_user_id,
+            f'К сожалению, твое выполнение активности {activity.name!r} было отклонено...\n\n'
+            '<i>Комментарий от модератора:</i>\n\n'
+            f'{message.text}',
+        )
+
+    await message.answer(
+        'Активность была успешно отклонена',
+        reply_markup=admin_main_menu_kb(),
+    )
+    await state.finish()
 
 
 @dp.callback_query_handler(custom_cd('new_admin_menu').filter(), state='*')

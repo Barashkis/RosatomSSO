@@ -125,7 +125,7 @@ async def deny_request_with_comment(call: types.CallbackQuery, state: FSMContext
     logger.debug(f'Admin {call.from_user.id} enters deny_request_with_comment handler with {request_user_id=}')
 
     async with state.proxy() as data:
-        data["request_user_id"] = request_user_id
+        data['request_user_id'] = request_user_id
 
     await call.message.edit_reply_markup()
     await call.message.answer('Напишите комментарий')
@@ -135,7 +135,7 @@ async def deny_request_with_comment(call: types.CallbackQuery, state: FSMContext
 @dp.message_handler(state='send_deny_request_comment')
 async def receive_deny_request_comment(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        request_user_id = data["request_user_id"]
+        request_user_id = data['request_user_id']
     logger.debug(f'Admin {message.from_user.id} enters receive_deny_request_comment handler with {request_user_id=}')
 
     await dp.current_state(user=request_user_id, chat=request_user_id).finish()
@@ -154,3 +154,4 @@ async def receive_deny_request_comment(message: types.Message, state: FSMContext
         'Заявка была успешно отклонена',
         reply_markup=admin_main_menu_kb(),
     )
+    await state.finish()

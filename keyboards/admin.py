@@ -54,7 +54,7 @@ def confirmations_kb(user_id: int, confirmation_id: int) -> InlineKeyboardMarkup
                 confirmation_id=confirmation_id,
                 row=0,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text='Отклонить',
@@ -63,7 +63,7 @@ def confirmations_kb(user_id: int, confirmation_id: int) -> InlineKeyboardMarkup
                 confirmation_id=confirmation_id,
                 row=1,
                 column=0,
-            )
+            ),
         ),
     )
 
@@ -79,15 +79,41 @@ def deny_request_kb(user_id: int) -> InlineKeyboardMarkup:
                 user_id=user_id,
                 row=0,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text='Без комментария',
             callback_data=custom_cd('deny_request_without_comment', keys=('user_id',)).new(
                 user_id=user_id,
+                row=1,
+                column=0,
+            ),
+        ),
+    )
+
+    return kb
+
+
+def deny_confirmation_kb(user_id: int, confirmation_id: int) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(row_width=1)
+    kb.add(
+        InlineKeyboardButton(
+            text='С комментарием',
+            callback_data=custom_cd('deny_confirmation_with_comment', keys=('user_id', 'confirmation_id',)).new(
+                user_id=user_id,
+                confirmation_id=confirmation_id,
                 row=0,
                 column=0,
-            )
+            ),
+        ),
+        InlineKeyboardButton(
+            text='Без комментария',
+            callback_data=custom_cd('deny_confirmation_without_comment', keys=('user_id', 'confirmation_id',)).new(
+                user_id=user_id,
+                confirmation_id=confirmation_id,
+                row=1,
+                column=0,
+            ),
         ),
     )
 
@@ -103,7 +129,7 @@ def edit_activity_kb(activity_id: int, is_actual: bool) -> InlineKeyboardMarkup:
                 activity_id=activity_id,
                 row=0,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text='Количество баллов',
@@ -111,7 +137,7 @@ def edit_activity_kb(activity_id: int, is_actual: bool) -> InlineKeyboardMarkup:
                 activity_id=activity_id,
                 row=1,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text='Действительна до',
@@ -119,7 +145,7 @@ def edit_activity_kb(activity_id: int, is_actual: bool) -> InlineKeyboardMarkup:
                 activity_id=activity_id,
                 row=2,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text=f'Сделать{" не " if is_actual else " "}активной',
@@ -127,14 +153,14 @@ def edit_activity_kb(activity_id: int, is_actual: bool) -> InlineKeyboardMarkup:
                 activity_id=activity_id,
                 row=3,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text='Назад',
             callback_data=custom_cd('moderate_activities').new(
                 row=4,
                 column=0,
-            )
+            ),
         ),
     )
 
@@ -149,21 +175,21 @@ def mailing_kb() -> InlineKeyboardMarkup:
             callback_data=custom_cd('mailing_all_admins').new(
                 row=0,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text='Всем модераторам',
             callback_data=custom_cd('mailing_all_common_users').new(
                 row=1,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text='Назад',
             callback_data=custom_cd('admin_menu').new(
                 row=2,
                 column=0,
-            )
+            ),
         ),
     )
 
@@ -178,28 +204,28 @@ def moderate_activities_kb() -> InlineKeyboardMarkup:
             callback_data=custom_cd('actual_activities').new(
                 row=0,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text='Создать',
             callback_data=custom_cd('create_activity').new(
                 row=1,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text='Редактировать',
             callback_data=custom_cd('edit_activities').new(
                 row=2,
                 column=0,
-            )
+            ),
         ),
         InlineKeyboardButton(
             text='Назад',
             callback_data=custom_cd('admin_menu').new(
                 row=3,
                 column=0,
-            )
+            ),
         ),
     )
 
@@ -229,11 +255,11 @@ def requests_kb(user_id: int) -> InlineKeyboardMarkup:
     kb.add(
         InlineKeyboardButton(
             text='Одобрить',
-            callback_data=custom_cd('approve_request', keys=('user_id',)).new(user_id=user_id, row=0, column=0)
+            callback_data=custom_cd('approve_request', keys=('user_id',)).new(user_id=user_id, row=0, column=0),
         ),
         InlineKeyboardButton(
             text='Отклонить',
-            callback_data=custom_cd('deny_request', keys=('user_id',)).new(user_id=user_id, row=1, column=0)
+            callback_data=custom_cd('deny_request', keys=('user_id',)).new(user_id=user_id, row=1, column=0),
         ),
     )
 
