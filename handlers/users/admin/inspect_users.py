@@ -27,7 +27,7 @@ async def inspect_users(call: types.CallbackQuery, callback_data: Dict):
 
     with PostgresSession.begin() as session:
         session.execute(text('SET timezone = \'Europe/Moscow\';'))
-        if to_inspect := session.query(CommonUser).filter(
+        if to_inspect := session.query(CommonUser).order_by(CommonUser.created_at.desc()).filter(
                 CommonUser.status != request_denied_status,
                 CommonUser.status != moderation_status,
         ).all():
