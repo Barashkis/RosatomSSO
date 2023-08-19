@@ -89,6 +89,13 @@ def deny_request_kb(user_id: int) -> InlineKeyboardMarkup:
                 column=0,
             ),
         ),
+        InlineKeyboardButton(
+            text='Назад',
+            callback_data=custom_cd('admin_menu').new(
+                row=2,
+                column=0,
+            ),
+        ),
     )
 
     return kb
@@ -112,6 +119,13 @@ def deny_confirmation_kb(user_id: int, confirmation_id: int) -> InlineKeyboardMa
                 user_id=user_id,
                 confirmation_id=confirmation_id,
                 row=1,
+                column=0,
+            ),
+        ),
+        InlineKeyboardButton(
+            text='Назад',
+            callback_data=custom_cd('admin_menu').new(
+                row=2,
                 column=0,
             ),
         ),
