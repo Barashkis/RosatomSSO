@@ -186,14 +186,14 @@ def mailing_kb() -> InlineKeyboardMarkup:
     kb.add(
         InlineKeyboardButton(
             text='Всем бойцам ССО',
-            callback_data=custom_cd('mailing_all_admins').new(
+            callback_data=custom_cd('mailing_all_common_users').new(
                 row=0,
                 column=0,
             ),
         ),
         InlineKeyboardButton(
             text='Всем модераторам',
-            callback_data=custom_cd('mailing_all_common_users').new(
+            callback_data=custom_cd('mailing_all_admins').new(
                 row=1,
                 column=0,
             ),

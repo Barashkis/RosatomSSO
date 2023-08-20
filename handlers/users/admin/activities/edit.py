@@ -8,10 +8,6 @@ from aiogram.utils.markdown import quote_html
 
 from config import tz
 from database import Activity
-from handlers.exceptions import (
-    WrongActivityPointsError,
-    WrongAdminActivityIdError,
-)
 from keyboards import (
     admin_main_menu_kb,
     custom_cd,
@@ -22,6 +18,11 @@ from loader import (
     dp,
 )
 from logger import logger
+
+from ....exceptions import (
+    WrongActivityPointsError,
+    WrongAdminActivityIdError,
+)
 
 
 @dp.callback_query_handler(custom_cd('edit_activities').filter(), state='*')

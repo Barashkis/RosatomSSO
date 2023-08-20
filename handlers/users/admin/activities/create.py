@@ -7,7 +7,6 @@ from aiogram.utils.markdown import quote_html
 
 from config import tz
 from database import Activity
-from handlers.exceptions import WrongActivityPointsError
 from keyboards import (
     custom_cd,
     moderate_activities_kb,
@@ -19,6 +18,7 @@ from loader import (
 from logger import logger
 
 from ...._utils import update_state_data
+from ....exceptions import WrongActivityPointsError
 
 
 @dp.callback_query_handler(custom_cd('create_activity').filter(), state='*')
