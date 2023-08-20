@@ -1,18 +1,22 @@
-from typing import Tuple
+from functools import partial
+from typing import Coroutine
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import ContentType
+
+from loader import bot
+from utils import message_file_utils_dict
 
 
-async def file_info_from_message(message: types.Message) -> Tuple[str, str]:
-    content_type = message.content_type
-    if content_type == ContentType.PHOTO:
-        return message.photo[-1].file_id, 'photo'
-    elif content_type == ContentType.VIDEO:
-        return message.video.file_id, 'video'
+async def send_message(chat_id: int, content_type: str, message: types.Message) -> None:
+    if content_type == 'text':
+        send_func = partial(bot.send_message, text=message.text)
     else:
-        return message.document.file_id, 'document'
+        file_utils = message_file_utils_dict[content_type]
+        file_id = file_utils.file_id(message)
+        send_func = partial(file_utils.send, file=file_id, caption=message.caption)
+
+    await send_func(chat_id=chat_id)
 
 
 async def update_state_data(state: FSMContext, category_key: str, **kwargs) -> None:

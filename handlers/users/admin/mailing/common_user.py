@@ -2,18 +2,20 @@ import asyncio
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram.types import ContentType
 
-from database import CommonUser
+from database import Admin
 from keyboards import (
     custom_cd,
     mailing_kb,
 )
 from loader import (
     PostgresSession,
-    bot,
     dp,
 )
 from logger import logger
+
+from ...._utils import send_message
 
 
 @dp.callback_query_handler(custom_cd('mailing_all_common_users').filter(), state='*')
@@ -29,22 +31,26 @@ async def mailing_all_common_users(call: types.CallbackQuery, state: FSMContext)
     await state.set_state('send_message_to_all_common_users')
 
 
-@dp.message_handler(state='send_message_to_all_common_users')
+@dp.message_handler(
+    state='send_message_to_all_common_users',
+    content_types=[ContentType.PHOTO, ContentType.DOCUMENT, ContentType.VIDEO, ContentType.TEXT],
+)
 async def receive_message_to_all_common_users(message: types.Message, state: FSMContext):
     logger.debug(f'Admin {message.from_user.id} enters receive_message_to_all_common_users handler')
 
-    message_text = message.text
-    if message_text.lower() == 'назад':
-        await message.answer('Процесс рассылки бойцам ССО был отменен', reply_markup=mailing_kb())
-    else:
-        with PostgresSession.begin() as session:
-            for common_user in session.query(CommonUser).all():
-                await bot.send_message(common_user.id, text=message_text)
-                await asyncio.sleep(.05)
+    if (content_type := str(message.content_type)) == 'text':
+        message_text = message.text
+        if message_text.lower() == 'назад':
+            await message.answer('Процесс рассылки бойцам ССО был отменен', reply_markup=mailing_kb())
 
-        await message.answer(
-            f'Ваше сообщение было успешно разослано всем активным бойцам ССО',
-            reply_markup=mailing_kb(),
-        )
+    with PostgresSession.begin() as session:
+        for moderator in session.query(Admin).all():
+            await send_message(chat_id=moderator.id, content_type=content_type, message=message)
+            await asyncio.sleep(.05)
+
+    await message.answer(
+        'Ваше сообщение было успешно разослано всем активным бойцам ССО',
+        reply_markup=mailing_kb(),
+    )
 
     await state.finish()

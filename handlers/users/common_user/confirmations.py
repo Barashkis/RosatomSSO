@@ -24,11 +24,9 @@ from loader import (
     dp,
 )
 from logger import logger
+from utils import message_file_utils_dict
 
-from ..._utils import (
-    file_info_from_message,
-    update_state_data,
-)
+from ..._utils import update_state_data
 from ...exceptions import WrongUserActivityIdError
 
 
@@ -126,9 +124,10 @@ async def receive_activity_id(message: types.Message, state: FSMContext):
     content_types=[ContentType.PHOTO, ContentType.DOCUMENT, ContentType.VIDEO],
 )
 async def receive_file(message: types.Message, state: FSMContext):
-    file_id, content_type = await file_info_from_message(message)
+    content_type = str(message.content_type)
     logger.debug(f'User {message.from_user.id} enters receive_file handler with {content_type=}')
 
+    file_id = message_file_utils_dict[content_type].file_id(message)
     await update_state_data(state, 'confirmation_data', file={'id': file_id, 'type': content_type})
     await message.answer('Теперь напиши комментарий к отправленному ранее файлу')
 
