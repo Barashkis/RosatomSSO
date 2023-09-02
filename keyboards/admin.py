@@ -12,7 +12,7 @@ def admin_main_menu_kb() -> InlineKeyboardMarkup:
     kb.add(
         InlineKeyboardButton(
             text='Пользователи',
-            callback_data=custom_cd('inspect_users', keys=('page',)).new(page=1, row=0, column=0),
+            callback_data=custom_cd('inspect_users').new(row=0, column=0),
         ),
         InlineKeyboardButton(
             text='Новые анкеты',
@@ -173,6 +173,36 @@ def edit_activity_kb(activity_id: int, is_actual: bool) -> InlineKeyboardMarkup:
             text='Назад',
             callback_data=custom_cd('moderate_activities').new(
                 row=4,
+                column=0,
+            ),
+        ),
+    )
+
+    return kb
+
+
+def inspect_users_kb() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(row_width=1)
+    kb.add(
+        InlineKeyboardButton(
+            text='По одному на страницу',
+            callback_data=custom_cd('inspect_common_users_single_pagination', keys=('page',)).new(
+                page=1,
+                row=0,
+                column=0,
+            ),
+        ),
+        InlineKeyboardButton(
+            text='Скачать XLSX-файл',
+            callback_data=custom_cd('inspect_common_users_csv_file').new(
+                row=1,
+                column=0,
+            ),
+        ),
+        InlineKeyboardButton(
+            text='Назад',
+            callback_data=custom_cd('admin_menu').new(
+                row=2,
                 column=0,
             ),
         ),
