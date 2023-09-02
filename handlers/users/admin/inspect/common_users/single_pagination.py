@@ -52,7 +52,7 @@ async def inspect_common_users_by_single_pagination(call: types.CallbackQuery, c
                 '<b>Последний раз был активен:</b> '
                 f'{datetime.strftime(user.statistic.last_activity_date, "%d.%m.%Y, %H:%M:%S")} по МСК',
                 reply_markup=users_kb(
-                    scroll_callback_name='inspect_users',
+                    scroll_callback_name='inspect_common_users_single_pagination',
                     back_callback_name='inspect_users',
                     total_pages=len(to_inspect),
                     page=page,
