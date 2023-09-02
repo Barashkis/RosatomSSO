@@ -16,8 +16,12 @@ postgres_name = os.getenv('POSTGRES_NAME')
 
 tz = timezone('Europe/Moscow')
 
-logs_path = Path(os.path.dirname(__file__), 'logfile.log')
-migrations_folder = 'versions'
+
+root_path = os.path.dirname(__file__)
+logs_path = Path(root_path, 'logfile.log')
+temp_dir_path = Path(root_path, 'temp')
+
+migrations_dir = 'versions'
 
 moderation_status = 'На модерации'
 request_denied_status = 'Анкета отклонена'

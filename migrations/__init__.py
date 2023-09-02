@@ -9,7 +9,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import sessionmaker
 
-from config import migrations_folder
+from config import migrations_dir
 from database import Migration
 from logger import logger
 
@@ -54,7 +54,7 @@ def run_migrations(s: sessionmaker, db_folder: str) -> None:
 
         workdir = str(Path('migrations', db_folder))
         unused_migrations = []
-        for migration in glob(str(Path(workdir, migrations_folder, f'{"[0-9]" * 3}.sql'))):
+        for migration in glob(str(Path(workdir, migrations_dir, f'{"[0-9]" * 3}.sql'))):
             if os.path.isfile(migration):
                 if (version := int(Path(migration).stem)) > current_version:
                     unused_migrations.append(version)
@@ -69,7 +69,7 @@ def run_migrations(s: sessionmaker, db_folder: str) -> None:
                 )
 
             for version in unused_migrations:
-                filepath = Path(workdir, migrations_folder, f'{str(version).rjust(3, "0")}.sql')
+                filepath = Path(workdir, migrations_dir, f'{str(version).rjust(3, "0")}.sql')
                 session.execute(_read_migration(filepath))
 
                 logger.debug(f'Execute migration {filepath}')

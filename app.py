@@ -1,8 +1,11 @@
+import os
+
 from aiogram import (
     Dispatcher,
     executor,
 )
 
+from config import temp_dir_path
 from database import PostgresBase
 from handlers import dp
 from loader import (
@@ -19,6 +22,9 @@ from set_commands import set_default_commands
 async def on_startup(dp: Dispatcher):
     import filters
     import middlewares
+
+    if not os.path.exists(temp_dir_path):
+        os.mkdir(temp_dir_path)
 
     PostgresBase.metadata.create_all(postgres_engine)
     run_migrations(PostgresSession, 'postgres')
