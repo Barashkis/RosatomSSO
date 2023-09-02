@@ -20,10 +20,10 @@ from loader import (
 from logger import logger
 
 
-@dp.callback_query_handler(custom_cd('inspect_users', keys=('page',)).filter(), state='*')
-async def inspect_users(call: types.CallbackQuery, callback_data: Dict):
+@dp.callback_query_handler(custom_cd('inspect_common_users_single_pagination', keys=('page',)).filter(), state='*')
+async def inspect_common_users_by_single_pagination(call: types.CallbackQuery, callback_data: Dict):
     page = int(callback_data['page'])
-    logger.debug(f'Admin {call.from_user.id} enters inspect_requests handler with {page=}')
+    logger.debug(f'Admin {call.from_user.id} enters inspect_common_users_by_single_pagination handler with {page=}')
 
     with PostgresSession.begin() as session:
         session.execute(text('SET timezone = \'Europe/Moscow\';'))
@@ -34,7 +34,8 @@ async def inspect_users(call: types.CallbackQuery, callback_data: Dict):
             user: CommonUser = to_inspect[page - 1]
             username = '@' + user.username if user.username else 'не установлен'
             last_pressed_button = (
-                user.statistic.last_pressed_button if user.statistic.last_pressed_button else 'нажатий не было'
+                last_pressed_button if (last_pressed_button := user.statistic.last_pressed_button)
+                else 'нажатий не было'
             )
             await call.message.edit_text(
                 f'Пользователей в системе: {len(to_inspect)}\n\n'
@@ -52,7 +53,7 @@ async def inspect_users(call: types.CallbackQuery, callback_data: Dict):
                 f'{datetime.strftime(user.statistic.last_activity_date, "%d.%m.%Y, %H:%M:%S")} по МСК',
                 reply_markup=users_kb(
                     scroll_callback_name='inspect_users',
-                    back_callback_name='admin_menu',
+                    back_callback_name='inspect_users',
                     total_pages=len(to_inspect),
                     page=page,
                 )
