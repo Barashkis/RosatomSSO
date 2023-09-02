@@ -1,4 +1,5 @@
 import csv
+import os
 from datetime import datetime
 from typing import Sequence
 
@@ -71,5 +72,6 @@ class CommonUsersFileBuilder(UsersFileBuilder):
                     correct_row.append(column)
                 worksheet.append(correct_row)
         workbook.save(xlsx_path)
+        os.remove(csv_path)
 
         return xlsx_path
