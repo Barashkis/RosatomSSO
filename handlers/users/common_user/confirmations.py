@@ -26,7 +26,6 @@ from loader import (
 from logger import logger
 from utils import message_file_utils_dict
 
-from ..._utils import update_state_data
 from ...exceptions import WrongUserActivityIdError
 
 
@@ -41,8 +40,7 @@ async def available_activities(call: types.CallbackQuery, state: FSMContext):
         ).all():
             activities_text = '\n\n'.join(
                 [
-                    f'{i}. {a.name} '
-                    f'(выполнение до {datetime.strftime(a.expires_at.astimezone(tz), "%d.%m")})'
+                    f'{i}. {a.name} (выполнение до {datetime.strftime(a.expires_at.astimezone(tz), "%d.%m")})'
                     for i, a in enumerate(activities, start=1)
                 ]
             )
@@ -98,17 +96,18 @@ async def receive_activity_id(message: types.Message, state: FSMContext):
                 activity = activities[activity_id - 1]
                 await message.answer(
                     f'Отлично! Ты выбрал активность {activity.name!r}.\n\n'
-                    'Пришли в чат файл, подтверждающий выполнение действия. '
+                    'Пришли в чат сообщение, подтверждающее выполнение действия. '
                     'Это может быть фотография с мероприятия, скриншот просмотренного видео и так далее. '
                     'Тип файла может быть одним из следующих:\n\n'
                     '1. Фото\n'
                     '2. Документ\n'
                     '3. Видео\n\n'
-                    'Далее тебе будет предложено написать текстовое сообщение к этому файлу',
+                    'Также не забудь написать текстовое сообщение к этому файлу. '
+                    'Текст нужно отправлять вместе с файлом (в одном сообщении)',
                 )
 
-                await update_state_data(state, 'confirmation_data', activity_id=activity.id)
-                await state.set_state('send_file')
+                await state.set_state('send_confirmation')
+                await state.update_data({'activity_id': activity.id})
             else:
                 raise WrongUserActivityIdError(f'Activity id is not between 1 and {activities_count}')
         else:
@@ -120,53 +119,29 @@ async def receive_activity_id(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(
-    state='send_file',
+    state='send_confirmation',
     content_types=[ContentType.PHOTO, ContentType.DOCUMENT, ContentType.VIDEO],
 )
-async def receive_file(message: types.Message, state: FSMContext):
-    content_type = str(message.content_type)
-    logger.debug(f'User {message.from_user.id} enters receive_file handler with {content_type=}')
-
-    file_id = message_file_utils_dict[content_type].file_id(message)
-    await update_state_data(state, 'confirmation_data', file={'id': file_id, 'type': content_type})
-    await message.answer('Теперь напиши комментарий к отправленному ранее файлу')
-
-    await state.set_state('send_comment')
-
-
-@dp.message_handler(state='send_file')
-async def incorrect_file_content_type(message: types.Message):
-    logger.debug(f'User {message.from_user.id} enters incorrect_file_content_type handler')
-
-    await message.answer(
-        'Тип файла может быть одним из следующих:\n\n'
-        '1. Фото\n'
-        '2. Документ\n'
-        '3. Видео\n\n'
-        'Повтори попытку еще раз',
-    )
-
-
-@dp.message_handler(state='send_comment')
-async def receive_comment(message: types.Message, state: FSMContext):
+async def receive_confirmation(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
-    comment = message.text
-    logger.debug(f'User {user_id} enters receive_comment handler with {comment=}')
+    content_type = str(message.content_type)
+    caption = message.caption
+    logger.debug(f'User {user_id} enters receive_confirmation handler with {content_type=} and {caption=}')
 
     with PostgresSession.begin() as session:
         async with state.proxy() as data:
-            confirmation_data = data['confirmation_data']
-            confirmation_data['message'] = comment
+            activity_id = data['activity_id']
 
-            file = File(**confirmation_data.pop('file'))
-            session.add(Confirmation(user_id=user_id, **confirmation_data, file=file))
+        file_id = message_file_utils_dict[content_type].file_id(message)
+        file = File(id=file_id, caption=caption, type=content_type)
+        session.add(Confirmation(user_id=user_id, activity_id=activity_id, file=file))
 
-            activity = session.get(Activity, confirmation_data["activity_id"])
-            session.query(CommonUser).filter_by(id=user_id).update(
-                {
-                    'status': f'Зафиксировал активность {activity.name!r}'
-                }
-            )
+        activity = session.get(Activity, activity_id)
+        session.query(CommonUser).filter_by(id=user_id).update(
+            {
+                'status': f'Зафиксировал активность {activity.name!r}'
+            }
+        )
 
     await message.answer(
         'Отлично! Теперь дело за модераторами. Они проверят твой ответ и примут решение, засчитывать его или нет. '
@@ -176,10 +151,15 @@ async def receive_comment(message: types.Message, state: FSMContext):
     await state.finish()
 
 
-@dp.message_handler(state='send_comment', content_types=ContentType.ANY)
-async def incorrect_message_content_type(message: types.Message):
-    logger.debug(f'User {message.from_user.id} enters incorrect_message_content_type handler')
+@dp.message_handler(state='send_confirmation')
+async def incorrect_confirmation_content_type(message: types.Message):
+    logger.debug(f'User {message.from_user.id} enters incorrect_file_content_type handler')
 
     await message.answer(
-        'Ты должен отправить именно текстовое сообщение, чтобы закончить фиксацию выполнения активности',
+        'Тип сообщения может быть одним из следующих:\n\n'
+        '1. Фото\n'
+        '2. Документ\n'
+        '3. Видео\n\n'
+        'Повтори попытку еще раз',
     )
+

@@ -10,10 +10,10 @@ from aiogram import types
 class FileMessageUtils(ABC):
     @staticmethod
     @abstractmethod
-    async def send(chat_id: int, caption: Optional[str], file: Optional[str]) -> None:
+    def file_id(message: types.Message) -> str:
         ...
 
     @staticmethod
     @abstractmethod
-    def file_id(message: types.Message) -> str:
+    async def send(chat_id: int, caption: Optional[str], file: Optional[str]) -> None:
         ...

@@ -1,5 +1,4 @@
 from functools import partial
-from typing import Coroutine
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext

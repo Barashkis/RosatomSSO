@@ -49,7 +49,8 @@ async def unchecked_confirmations(call: types.CallbackQuery, callback_data: Dict
                         f'<b>Название активности:</b> {confirmation.activity.name}\n'
                         '<b>Количество одобренных активностей данного типа:</b> '
                         f'{done_some_activities_amount}\n'
-                        f'<b>Комментарий:</b> {confirmation.message}',
+                        f'<b>Комментарий:</b> '
+                        f'{caption if (caption := confirmation.file.caption) is not None else "отсутствует"}',
                 reply_markup=confirmations_kb(
                     scroll_callback_name='unchecked_confirmations',
                     back_callback_name='new_admin_menu',

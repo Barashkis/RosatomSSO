@@ -64,7 +64,6 @@ class Confirmation(PostgresBase):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    message: Mapped[str] = mapped_column(Text(), nullable=False)
     is_checked: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     activity_id = mapped_column(ForeignKey('activity.id'))
@@ -80,6 +79,7 @@ class File(PostgresBase):
     __tablename__ = 'file'
 
     id: Mapped[str] = mapped_column(String(100), primary_key=True, index=True)
+    caption: Mapped[str] = mapped_column(Text(), nullable=True)
     type: Mapped[str] = mapped_column(String(25))
 
     confirmation: Mapped['Confirmation'] = relationship(back_populates='file')
