@@ -1,5 +1,6 @@
-temp/
 .idea
+
+rosatom_sso/temp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
