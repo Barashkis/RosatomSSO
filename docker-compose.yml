@@ -14,7 +14,7 @@ services:
     networks:
       - botnet
     volumes:
-      - ./postgres:/var/lib/postgresql
+      - ./postgres:/var/lib/postgresql/data
 
   redis:
     container_name: redis
@@ -28,17 +28,16 @@ services:
       - botnet
 
   rosatom_sso:
-    container_name: rosatom_sso
+    container_name: rosatom-sso
     build:
       context: .
-    command: python app.py
     restart: always
     networks:
       - botnet
     env_file:
       - '.env'
     volumes:
-      - .:/src
+      - ./rosatom_sso:/rosatom-sso/rosatom_sso
     depends_on:
       - postgres
       - redis
