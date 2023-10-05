@@ -52,7 +52,7 @@ def run_migrations(s: sessionmaker, db_folder: str) -> None:
             migration_record = session.query(Migration).first()
         current_version = migration_record.version
 
-        workdir = str(Path('migrations', db_folder))
+        workdir = str(Path('rosatom_sso', 'migrations', db_folder))
         unused_migrations = []
         for migration in glob(str(Path(workdir, migrations_dir, f'{"[0-9]" * 3}.sql'))):
             if os.path.isfile(migration):
