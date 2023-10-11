@@ -1,12 +1,12 @@
 from aiogram import types
 
-from rosatom_sso.database import CommonUser
-from rosatom_sso.keyboards import custom_cd
-from rosatom_sso.loader import (
+from ....database import CommonUser
+from ....keyboards import custom_cd
+from ....loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
+from ....logger import logger
 
 
 @dp.callback_query_handler(custom_cd('my_points').filter())

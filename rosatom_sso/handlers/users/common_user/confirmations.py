@@ -7,26 +7,24 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ContentType
 
-from rosatom_sso.config import tz
-from rosatom_sso.database import (
+from ....database import (
     Activity,
     CommonUser,
     Confirmation,
     File,
 )
-from rosatom_sso.keyboards import (
+from ....keyboards import (
+    cancel_choosing_activity_kb,
     common_user_main_menu_kb,
     custom_cd,
 )
-from rosatom_sso.keyboards.common_user import cancel_choosing_activity_kb
-from rosatom_sso.loader import (
+from ....loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
-from rosatom_sso.utils import message_file_utils_dict
-
-from ...exceptions import WrongUserActivityIdError
+from ....logger import logger
+from ....utils import message_file_utils_dict
+from ...exceptions import UserActivityIdError
 
 
 @dp.callback_query_handler(custom_cd('available_activities').filter())
@@ -40,7 +38,7 @@ async def available_activities(call: types.CallbackQuery, state: FSMContext):
         ).all():
             activities_text = '\n\n'.join(
                 [
-                    f'{i}. {a.name} (выполнение до {datetime.strftime(a.expires_at.astimezone(tz), "%d.%m")})'
+                    f'{i}. {a.name} (выполнение до {datetime.strftime(a.expires_at.astimezone(), "%d.%m")})'
                     for i, a in enumerate(activities, start=1)
                 ]
             )
@@ -84,7 +82,7 @@ async def receive_activity_id(message: types.Message, state: FSMContext):
     try:
         activity_id = int(message_text)
     except ValueError:
-        raise WrongUserActivityIdError(f'Activity id is not integer. The actual value is {message_text=}')
+        raise UserActivityIdError(f'Activity id is not integer. The actual value is {message_text=}')
 
     with PostgresSession.begin() as session:
         if activities := session.query(Activity).order_by(Activity.expires_at, Activity.id).filter(
@@ -109,7 +107,7 @@ async def receive_activity_id(message: types.Message, state: FSMContext):
                 await state.set_state('send_confirmation')
                 await state.update_data({'activity_id': activity.id})
             else:
-                raise WrongUserActivityIdError(f'Activity id is not between 1 and {activities_count}')
+                raise UserActivityIdError(f'Activity id is not between 1 and {activities_count}')
         else:
             await message.answer(
                 'На данный момент список активностей пуст',
@@ -162,4 +160,3 @@ async def incorrect_confirmation_content_type(message: types.Message):
         '3. Видео\n\n'
         'Повтори попытку еще раз',
     )
-

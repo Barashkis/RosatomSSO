@@ -1,16 +1,16 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from rosatom_sso.database import Admin
-from rosatom_sso.keyboards import (
+from ....database import Admin
+from ....keyboards import (
     admin_main_menu_kb,
     custom_cd,
 )
-from rosatom_sso.loader import (
+from ....loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
+from ....logger import logger
 
 
 async def add_new_admin(new_admin_id: int, message: types.Message, state: FSMContext):

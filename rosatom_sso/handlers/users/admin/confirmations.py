@@ -3,22 +3,22 @@ from typing import Dict
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from rosatom_sso.database import (
+from ....database import (
     CommonUser,
     Confirmation,
 )
-from rosatom_sso.keyboards import (
+from ....keyboards import (
     admin_main_menu_kb,
     confirmations_kb,
     custom_cd,
 )
-from rosatom_sso.keyboards.admin import deny_confirmation_kb
-from rosatom_sso.loader import (
+from ....keyboards.admin import deny_confirmation_kb
+from ....loader import (
     PostgresSession,
     bot,
     dp,
 )
-from rosatom_sso.logger import logger
+from ....logger import logger
 
 
 @dp.callback_query_handler(custom_cd('unchecked_confirmations', keys=('page',)).filter(), state='*')

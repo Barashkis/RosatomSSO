@@ -3,8 +3,8 @@ from functools import partial
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from rosatom_sso.loader import bot
-from rosatom_sso.utils import message_file_utils_dict
+from ..loader import bot
+from ..utils import message_file_utils_dict
 
 
 async def send_message(chat_id: int, content_type: str, message: types.Message) -> None:

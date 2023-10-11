@@ -6,22 +6,21 @@ from datetime import (
 from aiogram.types import Update
 from aiogram.utils.exceptions import MessageNotModified
 
-from rosatom_sso.config import tz
-from rosatom_sso.database import Activity
-from rosatom_sso.keyboards import (
+from ...database import Activity
+from ...keyboards import (
     admin_main_menu_kb,
     common_user_main_menu_kb,
 )
-from rosatom_sso.loader import (
+from ...loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
-
-from .exceptions import (
-    WrongActivityPointsError,
-    WrongAdminActivityIdError,
-    WrongUserActivityIdError,
+from ...logger import logger
+from ..exceptions import (
+    ActivityPointsError,
+    AdminActivityIdError,
+    InputDateError,
+    UserActivityIdError,
 )
 
 
@@ -32,7 +31,7 @@ async def catch_errors(update: Update, exception):
         logger.debug(f'User {callback_query.from_user.id} got an exception: {exception!r}')
 
         await callback_query.answer()
-    elif isinstance(exception, WrongUserActivityIdError):
+    elif isinstance(exception, UserActivityIdError):
         message = update.message
         logger.debug(f'User {message.from_user.id} got an exception: {exception!r}')
 
@@ -44,7 +43,7 @@ async def catch_errors(update: Update, exception):
                 activities_text = '\n\n'.join(
                     [
                         f'{i}. {a.name} '
-                        f'(выполнение до {datetime.strftime(a.expires_at.astimezone(tz), "%d.%m")})'
+                        f'(выполнение до {datetime.strftime(a.expires_at.astimezone(), "%d.%m")})'
                         for i, a in enumerate(activities, start=1)
                     ]
                 )
@@ -60,7 +59,7 @@ async def catch_errors(update: Update, exception):
                     'Список активностей сейчас пуст... Возможно, ты давно не заходил, поэтому жди новых активностей!',
                     reply_markup=common_user_main_menu_kb(),
                 )
-    elif isinstance(exception, WrongAdminActivityIdError):
+    elif isinstance(exception, AdminActivityIdError):
         message = update.message
         logger.debug(f'Admin {message.from_user.id} got an exception: {exception!r}')
 
@@ -69,7 +68,7 @@ async def catch_errors(update: Update, exception):
                 activities_text = '\n\n'.join(
                     [
                         f'{i}. {a.name} '
-                        f'(выполнение до {datetime.strftime(a.expires_at.astimezone(tz), "%d.%m")})'
+                        f'(выполнение до {datetime.strftime(a.expires_at.astimezone(), "%d.%m")})'
                         for i, a in enumerate(activities, start=1)
                     ]
                 )
@@ -86,10 +85,15 @@ async def catch_errors(update: Update, exception):
                     'Чтобы редактировать активности, необходимо, чтобы в списке была минимум одна',
                     reply_markup=admin_main_menu_kb(),
                 )
-    elif isinstance(exception, WrongActivityPointsError):
+    elif isinstance(exception, ActivityPointsError):
         message = update.message
         logger.debug(f'User {message.from_user.id} got an exception: {exception!r}')
 
         await message.answer('Вы ввели неправильное количество очков. Это должно быть положительно число')
+    elif isinstance(exception, InputDateError):
+        message = update.message
+        logger.debug(f'User {message.from_user.id} got an exception: {exception!r}')
+
+        await message.answer('Вы ввели несуществующую дату. Повторите попытку еще раз')
     else:
         logger.debug(f'User got an exception: {exception!r}')

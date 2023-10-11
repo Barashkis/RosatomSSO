@@ -5,18 +5,17 @@ from concurrent.futures import ProcessPoolExecutor
 from aiogram import types
 from sqlalchemy import text
 
-from rosatom_sso.config import (
+from ......config import (
     moderation_status,
     request_denied_status,
 )
-from rosatom_sso.database import CommonUser
-from rosatom_sso.keyboards import custom_cd
-from rosatom_sso.loader import (
+from ......database import CommonUser
+from ......keyboards import custom_cd
+from ......loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
-
+from ......logger import logger
 from .._utils import CommonUsersFileBuilder
 
 

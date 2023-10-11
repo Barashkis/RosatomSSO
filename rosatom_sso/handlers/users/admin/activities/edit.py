@@ -6,22 +6,22 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.markdown import quote_html
 
-from rosatom_sso.config import tz
-from rosatom_sso.database import Activity
-from rosatom_sso.keyboards import (
+from .....config import tz
+from .....database import Activity
+from .....keyboards import (
     admin_main_menu_kb,
     custom_cd,
     edit_activity_kb,
 )
-from rosatom_sso.loader import (
+from .....loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
-
+from .....logger import logger
 from ....exceptions import (
-    WrongActivityPointsError,
-    WrongAdminActivityIdError,
+    ActivityPointsError,
+    AdminActivityIdError,
+    InputDateError,
 )
 
 
@@ -34,7 +34,7 @@ async def list_activities_to_edit(call: types.CallbackQuery, state: FSMContext):
             activities_text = '\n\n'.join(
                 [
                     f'{i}. {a.name} '
-                    f'(выполнение до {datetime.strftime(a.expires_at.astimezone(tz), "%d.%m")}) - {a.points} баллов'
+                    f'(выполнение до {datetime.strftime(a.expires_at.astimezone(), "%d.%m")}) - {a.points} баллов'
                     for i, a in enumerate(activities, start=1)
                 ]
             )
@@ -59,7 +59,7 @@ async def receive_activity_to_edit_id(message: types.Message, state: FSMContext)
     try:
         activity_id = int(message_text)
     except ValueError:
-        raise WrongAdminActivityIdError(f'Activity id is not integer. The actual value is {message_text=}')
+        raise AdminActivityIdError(f'Activity id is not integer. The actual value is {message_text=}')
 
     with PostgresSession.begin() as session:
         if activities := session.query(Activity).order_by(Activity.expires_at, Activity.id).all():
@@ -68,12 +68,12 @@ async def receive_activity_to_edit_id(message: types.Message, state: FSMContext)
                 activity = activities[activity_id - 1]
                 await message.answer(
                     'Вы выбрали следующую активность:\n\n'
-                    f'{activity.name} (выполнение до {datetime.strftime(activity.expires_at.astimezone(tz), "%d.%m")})'
+                    f'{activity.name} (выполнение до {datetime.strftime(activity.expires_at.astimezone(), "%d.%m")})'
                     f' - {activity.points} баллов',
                     reply_markup=edit_activity_kb(activity.id, is_actual=activity.is_actual),
                 )
             else:
-                raise WrongAdminActivityIdError(f'Activity id is not between 1 and {activities_count}')
+                raise AdminActivityIdError(f'Activity id is not between 1 and {activities_count}')
         else:
             await message.answer(
                 'На данный момент список активностей пуст',
@@ -107,8 +107,7 @@ async def receive_new_activity_name(message: types.Message, state: FSMContext):
 
             await message.answer(
                 'Название активности успешно обновлено.\n\n'
-                f'{activity.name} (выполнение до '
-                f'{datetime.strftime(activity.expires_at.astimezone(tz), "%d.%m")})'
+                f'{activity.name} (выполнение до {datetime.strftime(activity.expires_at.astimezone(), "%d.%m")})'
                 f' - {activity.points} баллов',
                 reply_markup=edit_activity_kb(activity_id, is_actual=activity.is_actual),
             )
@@ -134,10 +133,10 @@ async def receive_activity_points(message: types.Message, state: FSMContext):
     try:
         points = int(message.text)
     except ValueError:
-        raise WrongActivityPointsError
+        raise ActivityPointsError
 
     if points <= 0:
-        raise WrongActivityPointsError
+        raise ActivityPointsError
 
     with PostgresSession.begin() as session:
         async with state.proxy() as data:
@@ -147,7 +146,7 @@ async def receive_activity_points(message: types.Message, state: FSMContext):
 
             await message.answer(
                 'Количество очков за активность успешно обновлено.\n\n'
-                f'{activity.name} (выполнение до {datetime.strftime(activity.expires_at.astimezone(tz), "%d.%m")})'
+                f'{activity.name} (выполнение до {datetime.strftime(activity.expires_at.astimezone(), "%d.%m")})'
                 f' - {activity.points} баллов',
                 reply_markup=edit_activity_kb(activity_id, is_actual=activity.is_actual),
             )
@@ -176,17 +175,22 @@ async def receive_activity_date(message: types.Message, state: FSMContext):
     logger.debug(f'Admin {message.from_user.id} enters receive_activity_date handler with {date=}')
 
     if re.match(r'^(0?[1-9]|[12]\d|3[01])\.(0?[1-9]|1[0-2])$', date):
-        day, month = date.split('.')
+        day, month = [int(date_element) for date_element in date.split('.')]
+        year = datetime.now().astimezone(tz).year
+        try:
+            dt = datetime(year, month, day, 23, 59, 59, tzinfo=tz)
+        except ValueError:
+            raise InputDateError
+
         with PostgresSession.begin() as session:
             async with state.proxy() as data:
                 activity_id = data['activity_id']
                 activity = session.get(Activity, activity_id)
-                activity.expires_at = f'{datetime.now().astimezone(tz).year}-{month}-{day} 23:59:59+3'
+                activity.expires_at = dt
 
             await message.answer(
                 'Дата, до которой активность будет действительна, успешно обновлена.\n\n'
-                f'{activity.name} (выполнение до {date})'
-                f' - {activity.points} баллов',
+                f'{activity.name} (выполнение до {date}) - {activity.points} баллов',
                 reply_markup=edit_activity_kb(activity_id, is_actual=activity.is_actual),
             )
             await state.finish()

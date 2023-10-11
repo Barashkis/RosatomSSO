@@ -5,20 +5,22 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.markdown import quote_html
 
-from rosatom_sso.config import tz
-from rosatom_sso.database import Activity
-from rosatom_sso.keyboards import (
+from .....config import tz
+from .....database import Activity
+from .....keyboards import (
     custom_cd,
     moderate_activities_kb,
 )
-from rosatom_sso.loader import (
+from .....loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
-
+from .....logger import logger
 from ...._utils import update_state_data
-from ....exceptions import WrongActivityPointsError
+from ....exceptions import (
+    ActivityPointsError,
+    InputDateError,
+)
 
 
 @dp.callback_query_handler(custom_cd('create_activity').filter(), state='*')
@@ -48,10 +50,10 @@ async def receive_activity_points(message: types.Message, state: FSMContext):
     try:
         points = int(message.text)
     except ValueError:
-        raise WrongActivityPointsError
+        raise ActivityPointsError
 
     if points <= 0:
-        raise WrongActivityPointsError
+        raise ActivityPointsError
 
     await update_state_data(state, 'activity_data', points=points)
     await message.answer(
@@ -69,15 +71,16 @@ async def receive_activity_expiration_date(message: types.Message, state: FSMCon
     logger.debug(f'Admin {message.from_user.id} enters receive_activity_expiration_date handler with {date=}')
 
     if re.match(r'^(0?[1-9]|[12]\d|3[01])\.(0?[1-9]|1[0-2])$', date):
-        day, month = date.split('.')
-        await update_state_data(
-            state,
-            'activity_data',
-            expires_at=f'{datetime.now().astimezone(tz).year}-{month}-{day} 23:59:59+3'
-        )
+        day, month = [int(date_element) for date_element in date.split('.')]
+        year = datetime.now().astimezone(tz).year
+        try:
+            dt = datetime(year, month, day, 23, 59, 59, tzinfo=tz)
+        except ValueError:
+            raise InputDateError
+
         with PostgresSession.begin() as session:
             async with state.proxy() as data:
-                session.add(Activity(**data['activity_data']))
+                session.add(Activity(**data['activity_data'], expires_at=dt))
 
         await state.reset_data()
         await message.answer('Активность была успешно добавлена', reply_markup=moderate_activities_kb())

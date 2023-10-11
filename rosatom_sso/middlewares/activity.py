@@ -4,8 +4,8 @@ from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from sqlalchemy import func
 
-from rosatom_sso.database import CommonUser
-from rosatom_sso.loader import PostgresSession
+from ..database import CommonUser
+from ..loader import PostgresSession
 
 
 class TrackUserActivityMiddleware(BaseMiddleware):

@@ -7,7 +7,7 @@ from typing import (
     Union,
 )
 
-from rosatom_sso.database import (
+from ......database import (
     Admin,
     CommonUser,
     Statistic,

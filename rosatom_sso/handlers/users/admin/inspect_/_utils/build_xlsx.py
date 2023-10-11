@@ -5,12 +5,11 @@ from typing import Sequence
 
 from openpyxl import Workbook
 
-from rosatom_sso.config import temp_dir_path
-from rosatom_sso.database import (
+from ......config import temp_dir_path
+from ......database import (
     CommonUser,
     Statistic,
 )
-
 from .interfaces import UsersFileBuilder
 
 

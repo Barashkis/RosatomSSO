@@ -2,14 +2,13 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ContentType
 
-from rosatom_sso.config import moderation_status
-from rosatom_sso.database import CommonUser
-from rosatom_sso.loader import (
+from ....config import moderation_status
+from ....database import CommonUser
+from ....loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
-
+from ....logger import logger
 from ..._utils import update_state_data
 
 

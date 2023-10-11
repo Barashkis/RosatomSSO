@@ -9,9 +9,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import sessionmaker
 
-from rosatom_sso.config import migrations_dir
-from rosatom_sso.database import Migration
-from rosatom_sso.logger import logger
+from ..config import migrations_dir
+from ..database import Migration
+from ..logger import logger
 
 
 __all__ = (

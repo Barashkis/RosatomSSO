@@ -4,17 +4,16 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ContentType
 
-from rosatom_sso.database import Admin
-from rosatom_sso.keyboards import (
+from .....database import Admin
+from .....keyboards import (
     custom_cd,
     mailing_kb,
 )
-from rosatom_sso.loader import (
+from .....loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
-
+from .....logger import logger
 from ...._utils import send_message
 
 

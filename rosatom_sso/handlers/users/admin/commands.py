@@ -3,13 +3,13 @@ from typing import Union
 from aiogram import types
 from aiogram.dispatcher.filters import Command
 
-from rosatom_sso.filters import IsAdmin
-from rosatom_sso.keyboards import (
+from ....filters import IsAdmin
+from ....keyboards import (
     admin_main_menu_kb,
     custom_cd,
 )
-from rosatom_sso.loader import dp
-from rosatom_sso.logger import logger
+from ....loader import dp
+from ....logger import logger
 
 
 @dp.message_handler(IsAdmin(), Command('admin_menu'), state='*')

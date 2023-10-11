@@ -1,8 +1,8 @@
 from aiogram import types
 from aiogram.types import ContentType
 
-from rosatom_sso.loader import dp
-from rosatom_sso.logger import logger
+from ..loader import dp
+from ..logger import logger
 
 
 @dp.message_handler(content_types=ContentType.ANY, state='*')

@@ -2,18 +2,17 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 
-from rosatom_sso.config import (
+from ...config import (
     moderation_status,
     request_denied_status,
 )
-from rosatom_sso.database import CommonUser
-from rosatom_sso.keyboards import common_user_main_menu_kb
-from rosatom_sso.loader import (
+from ...database import CommonUser
+from ...keyboards import common_user_main_menu_kb
+from ...loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
-
+from ...logger import logger
 from .._utils import update_state_data
 
 

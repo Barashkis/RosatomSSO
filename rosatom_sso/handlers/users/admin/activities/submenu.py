@@ -1,11 +1,11 @@
 from aiogram import types
 
-from rosatom_sso.keyboards import (
+from .....keyboards import (
     custom_cd,
     moderate_activities_kb,
 )
-from rosatom_sso.loader import dp
-from rosatom_sso.logger import logger
+from .....loader import dp
+from .....logger import logger
 
 
 @dp.callback_query_handler(custom_cd('moderate_activities').filter(), state='*')

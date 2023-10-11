@@ -1,10 +1,18 @@
-class WrongActivityPointsError(Exception):
+class ActivityIdError(Exception):
     pass
 
 
-class WrongAdminActivityIdError(Exception):
+class ActivityPointsError(Exception):
     pass
 
 
-class WrongUserActivityIdError(Exception):
+class AdminActivityIdError(ActivityIdError):
+    pass
+
+
+class InputDateError(Exception):
+    pass
+
+
+class UserActivityIdError(ActivityIdError):
     pass

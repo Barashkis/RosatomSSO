@@ -2,19 +2,19 @@ from typing import Dict
 
 from aiogram import types
 
-from rosatom_sso.config import request_denied_status
-from rosatom_sso.database import CommonUser
-from rosatom_sso.keyboards import (
+from .....config import request_denied_status
+from .....database import CommonUser
+from .....keyboards import (
     admin_main_menu_kb,
     custom_cd,
     recover_request_kb,
 )
-from rosatom_sso.loader import (
+from .....loader import (
     PostgresSession,
     bot,
     dp,
 )
-from rosatom_sso.logger import logger
+from .....logger import logger
 
 
 @dp.callback_query_handler(custom_cd('denied_requests', keys=('page',)).filter(), state='*')

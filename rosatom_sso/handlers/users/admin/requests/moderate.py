@@ -3,24 +3,24 @@ from typing import Dict
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from rosatom_sso.config import moderation_status
-from rosatom_sso.database import (
+from .....config import moderation_status
+from .....database import (
     CommonUser,
     Statistic,
 )
-from rosatom_sso.keyboards import (
+from .....keyboards import (
     admin_main_menu_kb,
     common_user_main_menu_kb,
     custom_cd,
     requests_kb,
 )
-from rosatom_sso.keyboards.admin import deny_request_kb
-from rosatom_sso.loader import (
+from .....keyboards.admin import deny_request_kb
+from .....loader import (
     PostgresSession,
     bot,
     dp,
 )
-from rosatom_sso.logger import logger
+from .....logger import logger
 
 
 @dp.callback_query_handler(custom_cd('moderate_requests', keys=('page',)).filter(), state='*')

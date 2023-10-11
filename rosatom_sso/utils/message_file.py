@@ -9,8 +9,7 @@ from typing import (
 
 from aiogram import types
 
-from rosatom_sso.loader import bot
-
+from ..loader import bot
 from .interfaces import FileMessageUtils
 
 

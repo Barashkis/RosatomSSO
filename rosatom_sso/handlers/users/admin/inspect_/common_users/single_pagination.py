@@ -4,20 +4,20 @@ from typing import Dict
 from aiogram import types
 from sqlalchemy import text
 
-from rosatom_sso.config import (
+from ......config import (
     moderation_status,
     request_denied_status,
 )
-from rosatom_sso.database import CommonUser
-from rosatom_sso.keyboards import (
+from ......database import CommonUser
+from ......keyboards import (
     custom_cd,
     users_kb,
 )
-from rosatom_sso.loader import (
+from ......loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
+from ......logger import logger
 
 
 @dp.callback_query_handler(custom_cd('inspect_common_users_single_pagination', keys=('page',)).filter(), state='*')

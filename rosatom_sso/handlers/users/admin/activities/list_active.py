@@ -5,14 +5,13 @@ from datetime import (
 
 from aiogram import types
 
-from rosatom_sso.config import tz
-from rosatom_sso.database import Activity
-from rosatom_sso.keyboards import custom_cd
-from rosatom_sso.loader import (
+from .....database import Activity
+from .....keyboards import custom_cd
+from .....loader import (
     PostgresSession,
     dp,
 )
-from rosatom_sso.logger import logger
+from .....logger import logger
 
 
 @dp.callback_query_handler(custom_cd('actual_activities').filter(), state='*')
@@ -27,7 +26,7 @@ async def list_actual_activities(call: types.CallbackQuery):
             message_text = '\n\n'.join(
                 [
                     f'{i}. {a.name} '
-                    f'(выполнение до {datetime.strftime(a.expires_at.astimezone(tz), "%d.%m")}) - {a.points} баллов'
+                    f'(выполнение до {datetime.strftime(a.expires_at.astimezone(), "%d.%m")}) - {a.points} баллов'
                     for i, a in enumerate(activities, start=1)
                 ]
             )
