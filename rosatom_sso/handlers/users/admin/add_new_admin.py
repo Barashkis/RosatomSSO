@@ -1,6 +1,11 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram.types import BotCommandScopeChat
 
+from ....config import (
+    ADMIN_COMMANDS,
+    COMMON_USERS_COMMANDS,
+)
 from ....database import Admin
 from ....keyboards import (
     admin_main_menu_kb,
@@ -24,6 +29,10 @@ async def add_new_admin(new_admin_id: int, message: types.Message, state: FSMCon
             await message.answer(
                 'Пользователь был добавлен в список модераторов бота',
                 reply_markup=admin_main_menu_kb(),
+            )
+            await dp.bot.set_my_commands(
+                ADMIN_COMMANDS + COMMON_USERS_COMMANDS,
+                scope=BotCommandScopeChat(chat_id=new_admin_id),
             )
             await state.finish()
         else:
