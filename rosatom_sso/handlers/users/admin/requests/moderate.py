@@ -3,7 +3,7 @@ from typing import Dict
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
-from .....config import moderation_status
+from .....config import MODERATION_STATUS
 from .....database import (
     CommonUser,
     Statistic,
@@ -29,7 +29,7 @@ async def moderate_requests(call: types.CallbackQuery, callback_data: Dict):
     logger.debug(f'Admin {call.from_user.id} enters moderate_requests handler with {page=}')
 
     with PostgresSession.begin() as session:
-        if to_moderate := session.query(CommonUser).filter_by(status=moderation_status).all():
+        if to_moderate := session.query(CommonUser).filter_by(status=MODERATION_STATUS).all():
             user: CommonUser = to_moderate[page - 1]
             username = '@' + user.username if user.username else 'не установлен'
             await call.message.edit_text(

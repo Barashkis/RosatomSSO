@@ -7,13 +7,13 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from sqlalchemy.orm import sessionmaker
 
 from .config import (
-    postgres_host,
-    postgres_name,
-    postgres_password,
-    postgres_user,
-    redis_host,
-    redis_password,
-    token,
+    POSTGRES_HOST,
+    POSTGRES_NAME,
+    POSTGRES_PASSWORD,
+    POSTGRES_USER,
+    REDIS_HOST,
+    REDIS_PASSWORD,
+    TOKEN,
 )
 from .database import new_engine
 
@@ -26,16 +26,16 @@ __all__ = (
     'storage',
 )
 
-bot = Bot(token=token, parse_mode=types.ParseMode.HTML)
-storage = RedisStorage2(host=redis_host, password=redis_password)
+bot = Bot(token=TOKEN, parse_mode=types.ParseMode.HTML)
+storage = RedisStorage2(host=REDIS_HOST, password=REDIS_PASSWORD)
 dp = Dispatcher(bot, storage=storage)
 
 postgres_engine = new_engine(
     dialect='postgresql',
     driver='psycopg2',
-    user=postgres_user,
-    password=postgres_password,
-    host=postgres_host,
-    name=postgres_name,
+    user=POSTGRES_USER,
+    password=POSTGRES_PASSWORD,
+    host=POSTGRES_HOST,
+    name=POSTGRES_NAME,
 )
 PostgresSession = sessionmaker(bind=postgres_engine)

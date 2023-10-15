@@ -6,8 +6,8 @@ from aiogram import types
 from sqlalchemy import text
 
 from ......config import (
-    moderation_status,
-    request_denied_status,
+    MODERATION_STATUS,
+    REQUEST_DENIED_STATUS,
 )
 from ......database import CommonUser
 from ......keyboards import custom_cd
@@ -25,8 +25,8 @@ async def inspect_common_users_by_csv_file(call: types.CallbackQuery):
     with PostgresSession.begin() as session:
         session.execute(text('SET timezone = \'Europe/Moscow\';'))
         if to_inspect := session.query(CommonUser).order_by(CommonUser.created_at.desc()).filter(
-                CommonUser.status != request_denied_status,
-                CommonUser.status != moderation_status,
+                CommonUser.status != REQUEST_DENIED_STATUS,
+                CommonUser.status != MODERATION_STATUS,
         ).all():
             statistics_ = [user.statistic for user in to_inspect]
 

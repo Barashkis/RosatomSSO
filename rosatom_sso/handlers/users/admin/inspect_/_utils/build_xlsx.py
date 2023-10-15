@@ -1,11 +1,12 @@
 import csv
 import os
 from datetime import datetime
+from pathlib import Path
 from typing import Sequence
 
 from openpyxl import Workbook
 
-from ......config import temp_dir_path
+from ......config import TEMP_DIR
 from ......database import (
     CommonUser,
     Statistic,
@@ -16,9 +17,9 @@ from .interfaces import UsersFileBuilder
 class CommonUsersFileBuilder(UsersFileBuilder):
     @staticmethod
     def build_xlsx(users: Sequence[CommonUser], statistics_: Sequence[Statistic]) -> str:
-        fp = f'{temp_dir_path}/common-users-{int(datetime.now().timestamp() * 100)}'
-        csv_path = f'{fp}.csv'
-        xlsx_path = f'{fp}.xlsx'
+        filename = f'common-users-{int(datetime.now().timestamp() * 100)}'
+        csv_path = Path(TEMP_DIR, f'{filename}.csv')
+        xlsx_path = Path(TEMP_DIR, f'{filename}.xlsx')
 
         with open(csv_path, 'w') as file:
             writer = csv.writer(file)
@@ -73,4 +74,4 @@ class CommonUsersFileBuilder(UsersFileBuilder):
         workbook.save(xlsx_path)
         os.remove(csv_path)
 
-        return xlsx_path
+        return str(xlsx_path)

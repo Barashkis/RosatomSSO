@@ -2,7 +2,7 @@ from typing import Dict
 
 from aiogram import types
 
-from .....config import request_denied_status
+from .....config import REQUEST_DENIED_STATUS
 from .....database import CommonUser
 from .....keyboards import (
     admin_main_menu_kb,
@@ -23,7 +23,7 @@ async def recover_requests(call: types.CallbackQuery, callback_data: Dict):
     logger.debug(f'Admin {call.from_user.id} enters recover_requests handler with {page=}')
 
     with PostgresSession.begin() as session:
-        if to_recover := session.query(CommonUser).filter_by(status=request_denied_status).all():
+        if to_recover := session.query(CommonUser).filter_by(status=REQUEST_DENIED_STATUS).all():
             user: CommonUser = to_recover[page - 1]
             username = '@' + user.username if user.username else 'не установлен'
             await call.message.edit_text(

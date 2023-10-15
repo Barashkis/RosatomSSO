@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ContentType
 
-from ....config import moderation_status
+from ....config import MODERATION_STATUS
 from ....database import CommonUser
 from ....loader import (
     PostgresSession,
@@ -29,7 +29,7 @@ async def receive_user_squad_name(message: types.Message, state: FSMContext):
     await update_state_data(state, 'registration_data', squad_name=message.text)
     with PostgresSession.begin() as session:
         async with state.proxy() as data:
-            user = CommonUser(**data['registration_data'], status=moderation_status)
+            user = CommonUser(**data['registration_data'], status=MODERATION_STATUS)
             session.add(user)
     await state.reset_data()
     await message.answer('Модераторы скоро проверят твою заявку на присоединение к чат-боту. Ты получишь уведомление')

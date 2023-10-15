@@ -3,8 +3,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 
 from ...config import (
-    moderation_status,
-    request_denied_status,
+    MODERATION_STATUS,
+    REQUEST_DENIED_STATUS,
 )
 from ...database import CommonUser
 from ...keyboards import common_user_main_menu_kb
@@ -22,7 +22,7 @@ async def start(message: types.Message, state: FSMContext):
     with PostgresSession.begin() as session:
         user_id = tg_user.id
         if user := session.get(CommonUser, user_id):
-            if user.status == request_denied_status:
+            if user.status == REQUEST_DENIED_STATUS:
                 await message.answer(
                     'К сожалению, модераторы не нашли тебя в списке участников. '
                     'Если ты уверен, что произошла ошибка, напиши нам в личные сообщения '
@@ -61,9 +61,9 @@ async def menu(message: types.Message):
     with PostgresSession.begin() as session:
         if user := session.query(CommonUser).filter(
                 CommonUser.id == user_id,
-                CommonUser.status != request_denied_status,
+                CommonUser.status != REQUEST_DENIED_STATUS,
         ).first():
-            if user.status == moderation_status:
+            if user.status == MODERATION_STATUS:
                 await message.answer(
                     'Ты не можешь использовать функционал бота, пока твоя анкета находится на модерации'
                 )

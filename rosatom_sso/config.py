@@ -1,27 +1,34 @@
 import os
 from pathlib import Path
 
+from aiogram import types
 from pytz import timezone
 
-
-token = os.getenv('TOKEN')
-
-redis_host = os.getenv('REDIS_HOST')
-redis_password = os.getenv('REDIS_PASSWORD')
-
-postgres_user = os.getenv('POSTGRES_USER')
-postgres_password = os.getenv('POSTGRES_PASSWORD')
-postgres_host = os.getenv('POSTGRES_HOST')
-postgres_name = os.getenv('POSTGRES_NAME')
-
-tz = timezone('Europe/Moscow')
+from . import ROOT_DIR
 
 
-root_path = os.path.dirname(__file__)
-logs_path = Path(root_path, '../logfile.log')
-temp_dir_path = Path(root_path, 'temp')
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
 
-migrations_dir = 'versions'
+POSTGRES_USER = os.getenv('POSTGRES_USER')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+POSTGRES_HOST = os.getenv('POSTGRES_HOST')
+POSTGRES_NAME = os.getenv('POSTGRES_NAME')
 
-moderation_status = 'На модерации'
-request_denied_status = 'Анкета отклонена'
+TOKEN = os.getenv('TOKEN')
+
+TIMEZONE = timezone('Europe/Moscow')
+
+COMMON_USERS_COMMANDS = [
+    types.BotCommand('start', 'Перезапустить бота'),
+    types.BotCommand('menu', 'Главное меню'),
+]
+ADMIN_COMMANDS = [
+    types.BotCommand('admin_menu', 'Панель модератора'),
+]
+
+MODERATION_STATUS = 'На модерации'
+REQUEST_DENIED_STATUS = 'Анкета отклонена'
+
+LOGS_DIR = Path(ROOT_DIR, 'logfile.log')
+TEMP_DIR = Path(ROOT_DIR, 'temp')

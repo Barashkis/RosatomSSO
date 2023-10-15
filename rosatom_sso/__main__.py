@@ -5,17 +5,13 @@ from aiogram import (
     executor,
 )
 
-from .config import temp_dir_path
-from .database import PostgresBase
+from .config import TEMP_DIR
 from .handlers import dp
 from .loader import (
-    PostgresSession,
     bot,
-    postgres_engine,
     storage,
 )
 from .logger import logger
-from .migrations import run_migrations
 from .set_commands import set_default_commands
 
 
@@ -25,11 +21,8 @@ async def on_startup(dp: Dispatcher):
         middlewares,
     )
 
-    if not os.path.exists(temp_dir_path):
-        os.mkdir(temp_dir_path)
-
-    PostgresBase.metadata.create_all(postgres_engine)
-    run_migrations(PostgresSession, 'postgres')
+    if not os.path.exists(TEMP_DIR):
+        os.mkdir(TEMP_DIR)
 
     await set_default_commands(dp)
 
@@ -43,7 +36,7 @@ async def on_shutdown(_):
     await bot.close()
     await storage.close()
 
-    logger.info("Bot stopped")
+    logger.info('Bot stopped')
 
 
 def main():

@@ -5,7 +5,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.markdown import quote_html
 
-from .....config import tz
+from .....config import TIMEZONE
 from .....database import Activity
 from .....keyboards import (
     custom_cd,
@@ -72,9 +72,9 @@ async def receive_activity_expiration_date(message: types.Message, state: FSMCon
 
     if re.match(r'^(0?[1-9]|[12]\d|3[01])\.(0?[1-9]|1[0-2])$', date):
         day, month = [int(date_element) for date_element in date.split('.')]
-        year = datetime.now().astimezone(tz).year
+        year = datetime.now().astimezone(TIMEZONE).year
         try:
-            dt = datetime(year, month, day, 23, 59, 59, tzinfo=tz)
+            dt = datetime(year, month, day, 23, 59, 59, tzinfo=TIMEZONE)
         except ValueError:
             raise InputDateError
 
