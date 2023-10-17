@@ -50,7 +50,7 @@ async def unchecked_confirmations(call: types.CallbackQuery, callback_data: Dict
                 confirmation.file_id,
                 caption=f'<b>Автор:</b> {author.wr_fullname}\n'
                         f'<b>Название активности:</b> {confirmation.activity.name}\n'
-                        '<b>Количество одобренных активностей данного типа:</b> '
+                        '<b>Количество одобренных активностей данного типа этому пользователю:</b> '
                         f'{done_some_activities_amount}\n'
                         f'<b>Комментарий:</b> '
                         f'{caption if (caption := confirmation.file.caption) is not None else "отсутствует"}',
