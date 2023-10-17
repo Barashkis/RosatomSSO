@@ -12,31 +12,46 @@ def admin_main_menu_kb() -> InlineKeyboardMarkup:
     kb.add(
         InlineKeyboardButton(
             text='Пользователи',
-            callback_data=custom_cd('inspect_users').new(row=0, column=0),
+            callback_data=custom_cd('inspect_users').new(
+                row=0,
+                column=0,
+            ),
         ),
         InlineKeyboardButton(
-            text='Новые анкеты',
-            callback_data=custom_cd('moderate_requests', keys=('page',)).new(page=1, row=1, column=0),
-        ),
-        InlineKeyboardButton(
-            text='Отклоненные анкеты',
-            callback_data=custom_cd('denied_requests', keys=('page',)).new(page=1, row=2, column=0),
+            text='Анкеты',
+            callback_data=custom_cd('requests').new(
+                row=1,
+                column=0,
+            ),
         ),
         InlineKeyboardButton(
             text='Непроверенные активности',
-            callback_data=custom_cd('unchecked_confirmations', keys=('page',)).new(page=1, row=3, column=0),
+            callback_data=custom_cd('unchecked_confirmations', keys=('page',)).new(
+                page=1,
+                row=2,
+                column=0,
+            ),
         ),
         InlineKeyboardButton(
             text='Активности (модерация)',
-            callback_data=custom_cd('moderate_activities').new(row=4, column=0),
+            callback_data=custom_cd('moderate_activities').new(
+                row=3,
+                column=0,
+            ),
         ),
         InlineKeyboardButton(
             text='Добавить модератора',
-            callback_data=custom_cd('add_admin').new(row=5, column=0),
+            callback_data=custom_cd('add_admin').new(
+                row=4,
+                column=0,
+            ),
         ),
         InlineKeyboardButton(
             text='Рассылка',
-            callback_data=custom_cd('mailing').new(row=6, column=0),
+            callback_data=custom_cd('mailing').new(
+                row=5,
+                column=0,
+            ),
         ),
     )
 
@@ -181,6 +196,31 @@ def edit_activity_kb(activity_id: int, is_actual: bool) -> InlineKeyboardMarkup:
     return kb
 
 
+@pagination
+def inspect_requests_kb(user_id: int) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(row_width=1)
+    kb.add(
+        InlineKeyboardButton(
+            text='Одобрить',
+            callback_data=custom_cd('approve_request', keys=('user_id',)).new(
+                user_id=user_id,
+                row=0,
+                column=0,
+            ),
+        ),
+        InlineKeyboardButton(
+            text='Отклонить',
+            callback_data=custom_cd('deny_request', keys=('user_id',)).new(
+                user_id=user_id,
+                row=1,
+                column=0,
+            ),
+        ),
+    )
+
+    return kb
+
+
 def inspect_users_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup(row_width=1)
     kb.add(
@@ -293,17 +333,31 @@ def recover_request_kb(user_id: int) -> InlineKeyboardMarkup:
     return kb
 
 
-@pagination
-def requests_kb(user_id: int) -> InlineKeyboardMarkup:
+def requests_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup(row_width=1)
     kb.add(
         InlineKeyboardButton(
-            text='Одобрить',
-            callback_data=custom_cd('approve_request', keys=('user_id',)).new(user_id=user_id, row=0, column=0),
+            text='Новые',
+            callback_data=custom_cd('moderate_requests', keys=('page',)).new(
+                page=1,
+                row=1,
+                column=0,
+            ),
         ),
         InlineKeyboardButton(
-            text='Отклонить',
-            callback_data=custom_cd('deny_request', keys=('user_id',)).new(user_id=user_id, row=1, column=0),
+            text='Отклоненные',
+            callback_data=custom_cd('denied_requests', keys=('page',)).new(
+                page=1,
+                row=2,
+                column=0,
+            ),
+        ),
+        InlineKeyboardButton(
+            text='Назад',
+            callback_data=custom_cd('admin_menu').new(
+                row=3,
+                column=0,
+            ),
         ),
     )
 

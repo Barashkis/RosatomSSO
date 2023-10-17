@@ -3,6 +3,7 @@ from .admin import (
     confirmations_kb,
     deny_confirmation_kb,
     edit_activity_kb,
+    inspect_requests_kb,
     inspect_users_kb,
     mailing_kb,
     moderate_activities_kb,
@@ -26,6 +27,7 @@ __all__ = (
     'mailing_kb',
     'moderate_activities_kb',
     'recover_request_kb',
+    'inspect_requests_kb',
     'requests_kb',
     'users_kb',
 

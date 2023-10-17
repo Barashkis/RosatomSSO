@@ -13,7 +13,7 @@ from .....keyboards import (
     admin_main_menu_kb,
     common_user_main_menu_kb,
     custom_cd,
-    requests_kb,
+    inspect_requests_kb,
 )
 from .....keyboards.admin import deny_request_kb
 from .....loader import (
@@ -39,9 +39,9 @@ async def moderate_requests(call: types.CallbackQuery, callback_data: Dict):
                 f'<b>Имя в Telegram:</b> {username}\n'
                 f'<b>Фамилия и имя:</b> {user.wr_fullname}\n'
                 f'<b>Название отряда:</b> {user.squad_name}\n',
-                reply_markup=requests_kb(
+                reply_markup=inspect_requests_kb(
                     scroll_callback_name='moderate_requests',
-                    back_callback_name='admin_menu',
+                    back_callback_name='requests',
                     total_pages=len(to_moderate),
                     page=page,
                     user_id=user.id,

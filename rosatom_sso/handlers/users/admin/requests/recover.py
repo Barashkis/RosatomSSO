@@ -35,7 +35,7 @@ async def recover_requests(call: types.CallbackQuery, callback_data: Dict):
                 f'<b>Название отряда:</b> {user.squad_name}\n',
                 reply_markup=recover_request_kb(
                     scroll_callback_name='recover_user',
-                    back_callback_name='admin_menu',
+                    back_callback_name='requests',
                     total_pages=len(to_recover),
                     page=page,
                     user_id=user.id,
