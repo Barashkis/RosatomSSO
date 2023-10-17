@@ -4,6 +4,12 @@ version = "1.0.0"
 description = "RosatomSSO official Telegram Bot"
 authors = ["Андрей Баранов <dushez.baranov@gmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "./migrations" },
+]
+
+[tool.poetry.scripts]
+rosatom-sso = 'rosatom_sso.__main__:main'
 
 [tool.poetry.dependencies]
 python = "~3.9"

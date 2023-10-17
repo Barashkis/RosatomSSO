@@ -1,6 +1,7 @@
 .idea
 
 rosatom_sso/temp/
+migrations/postgres/versions/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

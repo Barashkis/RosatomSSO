@@ -12,8 +12,9 @@ services:
     ports:
       - '5432:5432'
     networks:
-      - botnet
+      - rosatom-sso-network
     volumes:
+      - ./migrations/postgres/versions/001.sql:/docker-entrypoint-initdb.d/001.sql
       - pgdata:/var/lib/postgresql/data
 
   redis:
@@ -25,19 +26,22 @@ services:
     ports:
       - '6379:6379'
     networks:
-      - botnet
+      - rosatom-sso-network
 
-  rosatom_sso:
-    container_name: rosatom-sso
+  telegram-bot:
+    container_name: rosatom-sso-bot
     build:
       context: .
+      target: production
     restart: always
     networks:
-      - botnet
+      - rosatom-sso-network
     env_file:
       - '.env'
     volumes:
       - ./rosatom_sso:/rosatom-sso/rosatom_sso
+      - ./migrations:/rosatom-sso/migrations
+      - ./logs:/rosatom-sso/logs
     depends_on:
       - postgres
       - redis
@@ -46,5 +50,5 @@ volumes:
   pgdata:
 
 networks:
-  botnet:
+  rosatom-sso-network:
     driver: bridge
