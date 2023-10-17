@@ -55,7 +55,7 @@ async def recover_request(call: types.CallbackQuery, callback_data: Dict):
 
     await bot.send_message(
         request_user_id,
-        'Ты был восстановлен и теперь имеешь возможность снова отправить анкету',
+        'Ты был восстановлен и теперь имеешь возможность снова отправить анкету. Для этого снова введи команду /start',
     )
     with PostgresSession.begin() as session:
         session.query(CommonUser).filter_by(id=request_user_id).delete()
