@@ -16,7 +16,7 @@ from .interfaces import UsersFileBuilder
 
 class CommonUsersFileBuilder(UsersFileBuilder):
     @staticmethod
-    def build_xlsx(users: Sequence[CommonUser], statistics_: Sequence[Statistic]) -> str:
+    def build_xlsx(users: Sequence[CommonUser], statistics_: Sequence[Statistic]) -> str:  # type: ignore[override]
         filename = f'common-users-{int(datetime.now().timestamp() * 100)}'
         csv_path = Path(TEMP_DIR, f'{filename}.csv')
         xlsx_path = Path(TEMP_DIR, f'{filename}.xlsx')
@@ -68,7 +68,7 @@ class CommonUsersFileBuilder(UsersFileBuilder):
                 correct_row = []
                 for column in row:
                     if column.isdigit():
-                        column = int(column)
+                        column = int(column)  # type: ignore[assignment]
                     correct_row.append(column)
                 worksheet.append(correct_row)
         workbook.save(xlsx_path)

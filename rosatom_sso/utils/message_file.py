@@ -37,7 +37,7 @@ class PhotoUtils(FileMessageUtils):
         return message.photo[-1].file_id
 
     @staticmethod
-    async def send(caption: Optional[str], chat_id: int, file: str) -> None:
+    async def send(chat_id: int, caption: Optional[str], file: str) -> None:
         send_photo = _get_complete_send_func(bot.send_photo, caption)
         await send_photo(chat_id, photo=file)
 

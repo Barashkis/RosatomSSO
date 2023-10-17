@@ -15,5 +15,5 @@ class FileMessageUtils(ABC):
 
     @staticmethod
     @abstractmethod
-    async def send(chat_id: int, caption: Optional[str], file: Optional[str]) -> None:
+    async def send(chat_id: int, caption: Optional[str], file: str) -> None:
         ...

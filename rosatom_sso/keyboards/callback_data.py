@@ -1,5 +1,6 @@
 from functools import lru_cache
 from typing import (
+    Any,
     Literal,
     Tuple,
 )
@@ -12,7 +13,7 @@ __all__ = (
 )
 
 
-def _perform_callback_data_keys(*args) -> Tuple[str, Literal['row'], Literal['column']]:
+def _perform_callback_data_keys(*args) -> Tuple[str, Any, Literal['row'], Literal['column']]:
     return *args, 'row', 'column'  # type: ignore
 
 
