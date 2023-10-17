@@ -1,3 +1,4 @@
+import logging
 import os
 from glob import glob
 from pathlib import Path
@@ -9,14 +10,17 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import sessionmaker
 
-from ..config import migrations_dir
-from ..database import Migration
-from ..logger import logger
-
 
 __all__ = (
-    "run_migrations",
+    'migrate_postgres',
 )
+
+from rosatom_sso.database import Migration
+
+
+logger = logging.getLogger('rosatom_sso.migrations')
+
+migrations_dir = 'versions'
 
 
 class MigrationError(Exception):
@@ -32,7 +36,7 @@ def _read_migration(filepath: Path) -> TextClause:
     return text('\n'.join(statements))
 
 
-def run_migrations(s: sessionmaker, db_folder: str) -> None:
+def migrate_postgres(s: sessionmaker, db_folder: str) -> None:
     with s.begin() as session:
         session.execute(
             text(
@@ -52,7 +56,7 @@ def run_migrations(s: sessionmaker, db_folder: str) -> None:
             migration_record = session.query(Migration).first()
         current_version = migration_record.version
 
-        workdir = str(Path('rosatom_sso', 'migrations', db_folder))
+        workdir = str(Path('migrations', db_folder))
         unused_migrations = []
         for migration in glob(str(Path(workdir, migrations_dir, f'{"[0-9]" * 3}.sql'))):
             if os.path.isfile(migration):
@@ -72,5 +76,6 @@ def run_migrations(s: sessionmaker, db_folder: str) -> None:
                 filepath = Path(workdir, migrations_dir, f'{str(version).rjust(3, "0")}.sql')
                 session.execute(_read_migration(filepath))
 
-                logger.debug(f'Execute migration {filepath}')
+                logger.info(f'Execute migration {filepath}')
                 migration_record.version += 1
+        logger.info('All migrations are active')
