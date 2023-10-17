@@ -1,3 +1,4 @@
+import logging
 import os
 
 from aiogram import (
@@ -5,14 +6,20 @@ from aiogram import (
     executor,
 )
 
+from migrations import migrate_postgres
+
 from .config import TEMP_DIR
 from .handlers import dp
 from .loader import (
+    PostgresSession,
     bot,
     storage,
 )
-from .logger import logger
+from .logger import setup_logger
 from .set_commands import set_default_commands
+
+
+logger = logging.getLogger(__name__)
 
 
 async def on_startup(dp: Dispatcher):
@@ -20,6 +27,9 @@ async def on_startup(dp: Dispatcher):
         filters,
         middlewares,
     )
+
+    setup_logger()
+    migrate_postgres(PostgresSession, 'postgres')
 
     if not os.path.exists(TEMP_DIR):
         os.mkdir(TEMP_DIR)
