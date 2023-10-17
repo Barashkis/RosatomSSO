@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime
+from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
@@ -36,13 +37,17 @@ def setup_logger():
     if not os.path.exists(LOGS_DIR):
         os.mkdir(LOGS_DIR)
 
-    root_logger = logging.getLogger('rosatom_sso')
-    root_logger.setLevel(logging.DEBUG)
+    logger = logging.getLogger('rosatom_sso')
+    logger.setLevel(logging.DEBUG)
 
-    handler = TimedRotatingFileHandler(filename=Path(LOGS_DIR, 'logfile.log'), when='d', interval=31, backupCount=31)
-    handler.namer = _namer
+    time_handler = TimedRotatingFileHandler(filename=Path(LOGS_DIR, 'logfile.log'), when='d', interval=31, backupCount=31)
+    time_handler.namer = _namer
+
+    stream_handler = StreamHandler()
 
     formatter = _LocalTimeFormatter('{asctime}: {filename}: {levelname} - {message}', style='{')
-    handler.setFormatter(formatter)
+    time_handler.setFormatter(formatter)
+    stream_handler.setFormatter(formatter)
 
-    root_logger.addHandler(handler)
+    logger.addHandler(time_handler)
+    logger.addHandler(stream_handler)
