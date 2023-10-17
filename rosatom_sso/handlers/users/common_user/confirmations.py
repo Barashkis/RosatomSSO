@@ -1,3 +1,4 @@
+import logging
 from datetime import (
     datetime,
     timezone,
@@ -22,9 +23,11 @@ from ....loader import (
     PostgresSession,
     dp,
 )
-from ....logger import logger
 from ....utils import message_file_utils_dict
 from ...exceptions import UserActivityIdError
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.callback_query_handler(custom_cd('available_activities').filter())

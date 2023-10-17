@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import BotCommandScopeChat
@@ -15,7 +17,9 @@ from ....loader import (
     PostgresSession,
     dp,
 )
-from ....logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 async def add_new_admin(new_admin_id: int, message: types.Message, state: FSMContext):

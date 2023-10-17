@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
@@ -12,8 +14,10 @@ from ...loader import (
     PostgresSession,
     dp,
 )
-from ...logger import logger
 from .._utils import update_state_data
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.message_handler(Command('start'))

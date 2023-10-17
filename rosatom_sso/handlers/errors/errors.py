@@ -1,3 +1,4 @@
+import logging
 from datetime import (
     datetime,
     timezone,
@@ -15,13 +16,15 @@ from ...loader import (
     PostgresSession,
     dp,
 )
-from ...logger import logger
 from ..exceptions import (
     ActivityPointsError,
     AdminActivityIdError,
     InputDateError,
     UserActivityIdError,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.errors_handler()
@@ -49,8 +52,8 @@ async def catch_errors(update: Update, exception):
                 )
                 await message.answer(
                     'Ты ввел неправильный номер активности... '
-                    'Возможно, ты давно не заходил, и список активностей изменился, поэтому вот актуальный список:\n\n'
-                    + activities_text + '\n\n'
+                    'Возможно, ты давно не заходил, и список активностей изменился, '
+                    'поэтому вот актуальный список:\n\n' + activities_text + '\n\n'
                     'Выбери подходящий номер еще раз и отправь его',
                 )
             else:
@@ -74,8 +77,8 @@ async def catch_errors(update: Update, exception):
                 )
                 await message.answer(
                     'Вы ввели неправильный номер активности... '
-                    'Возможно, Вы давно не заходили, и список активностей изменился, поэтому вот актуальный список:\n\n'
-                    + activities_text + '\n\n'
+                    'Возможно, Вы давно не заходили, и список активностей изменился, '
+                    'поэтому вот актуальный список:\n\n' + activities_text + '\n\n'
                     'Выберите подходящий номер еще раз и отправьте его',
                 )
             else:

@@ -1,8 +1,12 @@
+import logging
+
 from aiogram import types
 from aiogram.types import ContentType
 
 from ..loader import dp
-from ..logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.message_handler(content_types=ContentType.ANY, state='*')

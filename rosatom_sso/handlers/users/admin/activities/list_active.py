@@ -1,3 +1,4 @@
+import logging
 from datetime import (
     datetime,
     timezone,
@@ -11,7 +12,9 @@ from .....loader import (
     PostgresSession,
     dp,
 )
-from .....logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.callback_query_handler(custom_cd('actual_activities').filter(), state='*')

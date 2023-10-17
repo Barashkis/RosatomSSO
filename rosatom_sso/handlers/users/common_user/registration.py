@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ContentType
@@ -8,8 +10,10 @@ from ....loader import (
     PostgresSession,
     dp,
 )
-from ....logger import logger
 from ..._utils import update_state_data
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.message_handler(state='send_user_fullname')

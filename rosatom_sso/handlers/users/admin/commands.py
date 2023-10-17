@@ -1,3 +1,4 @@
+import logging
 from typing import Union
 
 from aiogram import types
@@ -9,7 +10,9 @@ from ....keyboards import (
     custom_cd,
 )
 from ....loader import dp
-from ....logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.message_handler(IsAdmin(), Command('admin_menu'), state='*')

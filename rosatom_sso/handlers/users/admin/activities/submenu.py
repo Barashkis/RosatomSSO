@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import types
 
 from .....keyboards import (
@@ -5,7 +7,9 @@ from .....keyboards import (
     moderate_activities_kb,
 )
 from .....loader import dp
-from .....logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.callback_query_handler(custom_cd('moderate_activities').filter(), state='*')

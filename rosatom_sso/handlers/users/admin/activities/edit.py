@@ -1,3 +1,4 @@
+import logging
 import re
 from datetime import datetime
 from typing import Dict
@@ -17,12 +18,14 @@ from .....loader import (
     PostgresSession,
     dp,
 )
-from .....logger import logger
 from ....exceptions import (
     ActivityPointsError,
     AdminActivityIdError,
     InputDateError,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.callback_query_handler(custom_cd('edit_activities').filter(), state='*')

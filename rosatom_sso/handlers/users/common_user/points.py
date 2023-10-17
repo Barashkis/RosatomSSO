@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import types
 
 from ....database import CommonUser
@@ -6,7 +8,9 @@ from ....loader import (
     PostgresSession,
     dp,
 )
-from ....logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.callback_query_handler(custom_cd('my_points').filter())

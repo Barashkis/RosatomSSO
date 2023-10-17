@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 from concurrent.futures import ProcessPoolExecutor
 
@@ -15,8 +16,10 @@ from ......loader import (
     PostgresSession,
     dp,
 )
-from ......logger import logger
 from .._utils import CommonUsersFileBuilder
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.callback_query_handler(custom_cd('inspect_common_users_csv_file').filter(), state='*')

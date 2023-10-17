@@ -1,18 +1,21 @@
 import logging
+import os
 from datetime import datetime
+from logging.handlers import TimedRotatingFileHandler
+from pathlib import Path
 
-from .config import (
+from rosatom_sso.config import (
     LOGS_DIR,
     TIMEZONE,
 )
 
 
 __all__ = (
-    'logger',
+    'setup_logger',
 )
 
 
-class Formatter(logging.Formatter):
+class _LocalTimeFormatter(logging.Formatter):
     @staticmethod
     def convert_to_datetime(timestamp):
         return datetime.fromtimestamp(timestamp).astimezone(TIMEZONE)
@@ -25,18 +28,21 @@ class Formatter(logging.Formatter):
         return date_string
 
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+def _namer(_):
+    return Path(LOGS_DIR, f'logfile.{datetime.now(tz=TIMEZONE).strftime("%d-%m-%Y_%H:%M:%S")}.log')
 
-file_handler = logging.FileHandler(LOGS_DIR)
-file_handler.setLevel(logging.DEBUG)
 
-stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.DEBUG)
+def setup_logger():
+    if not os.path.exists(LOGS_DIR):
+        os.mkdir(LOGS_DIR)
 
-formatter = Formatter('%(asctime)s: %(filename)s: %(levelname)s - %(message)s')
-file_handler.setFormatter(formatter)
-stream_handler.setFormatter(formatter)
+    root_logger = logging.getLogger('rosatom_sso')
+    root_logger.setLevel(logging.DEBUG)
 
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
+    handler = TimedRotatingFileHandler(filename=Path(LOGS_DIR, 'logfile.log'), when='d', interval=31, backupCount=31)
+    handler.namer = _namer
+
+    formatter = _LocalTimeFormatter('{asctime}: {filename}: {levelname} - {message}', style='{')
+    handler.setFormatter(formatter)
+
+    root_logger.addHandler(handler)

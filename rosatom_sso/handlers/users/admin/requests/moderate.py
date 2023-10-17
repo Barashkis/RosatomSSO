@@ -1,3 +1,4 @@
+import logging
 from typing import Dict
 
 from aiogram import types
@@ -20,7 +21,9 @@ from .....loader import (
     bot,
     dp,
 )
-from .....logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.callback_query_handler(custom_cd('moderate_requests', keys=('page',)).filter(), state='*')

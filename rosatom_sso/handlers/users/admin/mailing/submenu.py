@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import types
 
 from .....keyboards import (
@@ -5,7 +7,9 @@ from .....keyboards import (
     mailing_kb,
 )
 from .....loader import dp
-from .....logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = (

@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
+from typing import List
 
-from aiogram import types
+from aiogram.types import BotCommand
 from pytz import timezone
 
 from . import ROOT_DIR
@@ -19,16 +20,16 @@ TOKEN = os.getenv('TOKEN')
 
 TIMEZONE = timezone('Europe/Moscow')
 
-COMMON_USERS_COMMANDS = [
-    types.BotCommand('start', 'Перезапустить бота'),
-    types.BotCommand('menu', 'Главное меню'),
+COMMON_USERS_COMMANDS: List[BotCommand] = [
+    BotCommand('start', 'Перезапустить бота'),
+    BotCommand('menu', 'Главное меню'),
 ]
-ADMIN_COMMANDS = [
-    types.BotCommand('admin_menu', 'Панель модератора'),
+ADMIN_COMMANDS: List[BotCommand] = [
+    BotCommand('admin_menu', 'Панель модератора'),
 ]
 
 MODERATION_STATUS = 'На модерации'
 REQUEST_DENIED_STATUS = 'Анкета отклонена'
 
-LOGS_DIR = Path(ROOT_DIR, 'logfile.log')
+LOGS_DIR = Path(ROOT_DIR, 'logs')
 TEMP_DIR = Path(ROOT_DIR, 'temp')

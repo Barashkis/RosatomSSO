@@ -1,3 +1,4 @@
+import logging
 import re
 from datetime import datetime
 
@@ -15,12 +16,14 @@ from .....loader import (
     PostgresSession,
     dp,
 )
-from .....logger import logger
 from ...._utils import update_state_data
 from ....exceptions import (
     ActivityPointsError,
     InputDateError,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.callback_query_handler(custom_cd('create_activity').filter(), state='*')

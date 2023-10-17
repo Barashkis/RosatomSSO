@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import Dict
 
@@ -17,7 +18,9 @@ from ......loader import (
     PostgresSession,
     dp,
 )
-from ......logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.callback_query_handler(custom_cd('inspect_common_users_single_pagination', keys=('page',)).filter(), state='*')

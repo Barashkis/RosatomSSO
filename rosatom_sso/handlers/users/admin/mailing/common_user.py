@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -13,8 +14,10 @@ from .....loader import (
     PostgresSession,
     dp,
 )
-from .....logger import logger
 from ...._utils import send_message
+
+
+logger = logging.getLogger(__name__)
 
 
 @dp.callback_query_handler(custom_cd('mailing_all_common_users').filter(), state='*')
