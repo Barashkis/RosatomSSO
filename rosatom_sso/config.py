@@ -8,24 +8,24 @@ from pytz import timezone
 from . import ROOT_DIR
 
 
-REDIS_HOST = os.getenv('REDIS_HOST')
-REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
+TOKEN = os.getenv('TOKEN')
 
 POSTGRES_USER = os.getenv('POSTGRES_USER')
 POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 POSTGRES_HOST = os.getenv('POSTGRES_HOST')
 POSTGRES_NAME = os.getenv('POSTGRES_NAME')
 
-TOKEN = os.getenv('TOKEN')
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
 
 TIMEZONE = timezone('Europe/Moscow')
 
+ADMIN_COMMANDS: List[BotCommand] = [
+    BotCommand('admin_menu', 'Панель модератора'),
+]
 COMMON_USERS_COMMANDS: List[BotCommand] = [
     BotCommand('start', 'Перезапустить бота'),
     BotCommand('menu', 'Главное меню'),
-]
-ADMIN_COMMANDS: List[BotCommand] = [
-    BotCommand('admin_menu', 'Панель модератора'),
 ]
 
 MODERATION_STATUS = 'На модерации'

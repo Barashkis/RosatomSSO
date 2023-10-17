@@ -40,7 +40,12 @@ def setup_logger():
     logger = logging.getLogger('rosatom_sso')
     logger.setLevel(logging.DEBUG)
 
-    time_handler = TimedRotatingFileHandler(filename=Path(LOGS_DIR, 'logfile.log'), when='d', interval=31, backupCount=31)
+    time_handler = TimedRotatingFileHandler(
+        filename=Path(LOGS_DIR, 'logfile.log'),
+        when='d',
+        interval=31,
+        backupCount=31,
+    )
     time_handler.namer = _namer
 
     stream_handler = StreamHandler()
