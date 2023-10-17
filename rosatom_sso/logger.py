@@ -29,7 +29,7 @@ class _LocalTimeFormatter(logging.Formatter):
 
 
 def _namer(_):
-    return Path(LOGS_DIR, f'logfile.{datetime.now(tz=TIMEZONE).strftime("%d-%m-%Y_%H:%M:%S")}.log')
+    return Path(LOGS_DIR, f'logfile.{datetime.now(tz=TIMEZONE).strftime("%d-%m-%Y")}.log')
 
 
 def setup_logger():
