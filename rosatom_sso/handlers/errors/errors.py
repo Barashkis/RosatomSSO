@@ -29,15 +29,12 @@ logger = logging.getLogger(__name__)
 
 @dp.errors_handler()
 async def catch_errors(update: Update, exception):
+    content_instance = update.message or update.callback_query
+    logger.debug(f'User {content_instance.from_user.id} got an exception: {exception!r}')
+
     if isinstance(exception, MessageNotModified):
-        callback_query = update.callback_query
-        logger.debug(f'User {callback_query.from_user.id} got an exception: {exception!r}')
-
-        await callback_query.answer()
+        await content_instance.answer()
     elif isinstance(exception, UserActivityIdError):
-        message = update.message
-        logger.debug(f'User {message.from_user.id} got an exception: {exception!r}')
-
         with PostgresSession.begin() as session:
             if activities := session.query(Activity).order_by(Activity.expires_at, Activity.id).filter(
                     Activity.expires_at >= datetime.now(tz=timezone.utc),
@@ -50,22 +47,19 @@ async def catch_errors(update: Update, exception):
                         for i, a in enumerate(activities, start=1)
                     ]
                 )
-                await message.answer(
+                await content_instance.answer(
                     'Ты ввел неправильный номер активности... '
                     'Возможно, ты давно не заходил, и список активностей изменился, '
                     'поэтому вот актуальный список:\n\n' + activities_text + '\n\n'
                     'Выбери подходящий номер еще раз и отправь его',
                 )
             else:
-                await dp.current_state(user=message.from_user.id, chat=message.from_user.id).finish()
-                await message.answer(
+                await dp.current_state(user=content_instance.from_user.id, chat=content_instance.from_user.id).finish()
+                await content_instance.answer(
                     'Список активностей сейчас пуст... Возможно, ты давно не заходил, поэтому жди новых активностей!',
                     reply_markup=common_user_main_menu_kb(),
                 )
     elif isinstance(exception, AdminActivityIdError):
-        message = update.message
-        logger.debug(f'Admin {message.from_user.id} got an exception: {exception!r}')
-
         with PostgresSession.begin() as session:
             if activities := session.query(Activity).order_by(Activity.expires_at, Activity.id).all():
                 activities_text = '\n\n'.join(
@@ -75,28 +69,20 @@ async def catch_errors(update: Update, exception):
                         for i, a in enumerate(activities, start=1)
                     ]
                 )
-                await message.answer(
+                await content_instance.answer(
                     'Вы ввели неправильный номер активности... '
                     'Возможно, Вы давно не заходили, и список активностей изменился, '
                     'поэтому вот актуальный список:\n\n' + activities_text + '\n\n'
                     'Выберите подходящий номер еще раз и отправьте его',
                 )
             else:
-                await dp.current_state(user=message.from_user.id, chat=message.from_user.id).finish()
-                await message.answer(
+                await dp.current_state(user=content_instance.from_user.id, chat=content_instance.from_user.id).finish()
+                await content_instance.answer(
                     'Список активностей сейчас пуст... '
                     'Чтобы редактировать активности, необходимо, чтобы в списке была минимум одна',
                     reply_markup=admin_main_menu_kb(),
                 )
     elif isinstance(exception, ActivityPointsError):
-        message = update.message
-        logger.debug(f'User {message.from_user.id} got an exception: {exception!r}')
-
-        await message.answer('Вы ввели неправильное количество очков. Это должно быть положительно число')
+        await content_instance.answer('Вы ввели неправильное количество очков. Это должно быть положительно число')
     elif isinstance(exception, InputDateError):
-        message = update.message
-        logger.debug(f'User {message.from_user.id} got an exception: {exception!r}')
-
-        await message.answer('Вы ввели несуществующую дату. Повторите попытку еще раз')
-    else:
-        logger.debug(f'User got an exception: {exception!r}')
+        await content_instance.answer('Вы ввели несуществующую дату. Повторите попытку еще раз')
