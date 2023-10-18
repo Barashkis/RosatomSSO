@@ -8,7 +8,7 @@ from .database import Admin
 from .loader import PostgresSession
 
 
-async def set_default_commands(dp):
+async def set_default_commands(dp) -> None:
     await dp.bot.set_my_commands(COMMON_USERS_COMMANDS)
 
     with PostgresSession.begin() as session:

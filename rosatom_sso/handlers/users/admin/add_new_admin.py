@@ -22,7 +22,7 @@ from ....loader import (
 logger = logging.getLogger(__name__)
 
 
-async def add_new_admin(new_admin_id: int, message: types.Message, state: FSMContext):
+async def add_new_admin(new_admin_id: int, message: types.Message, state: FSMContext) -> None:
     user_id = message.from_user.id
     with PostgresSession.begin() as session:
         admin_ids = [admin.id for admin in session.query(Admin).all()]

@@ -18,7 +18,7 @@ __all__ = (
 
 class _LocalTimeFormatter(logging.Formatter):
     @staticmethod
-    def convert_to_datetime(timestamp):
+    def convert_to_datetime(timestamp) -> datetime:
         return datetime.fromtimestamp(timestamp).astimezone(TIMEZONE)
 
     def formatTime(self, record, date_format=None):
@@ -29,11 +29,11 @@ class _LocalTimeFormatter(logging.Formatter):
         return date_string
 
 
-def _namer(_):
-    return Path(LOGS_DIR, f'logfile.{datetime.now(tz=TIMEZONE).strftime("%d-%m-%Y")}.log')
+def _namer(_) -> str:
+    return str(Path(LOGS_DIR, f'logfile.{datetime.now(tz=TIMEZONE).strftime("%d-%m-%Y")}.log'))
 
 
-def setup_logger():
+def setup_logger() -> None:
     if not os.path.exists(LOGS_DIR):
         os.mkdir(LOGS_DIR)
 
