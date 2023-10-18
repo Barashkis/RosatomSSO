@@ -30,7 +30,7 @@ WORKDIR $PROJECT_PATH
 
 COPY poetry.lock pyproject.toml README.md ./
 COPY ./migrations ./migrations/
-RUN poetry install --compile --only main
+RUN poetry install --compile --sync --only main
 
 COPY ./rosatom_sso ./rosatom_sso/
 RUN poetry install --compile --only-root
