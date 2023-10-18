@@ -340,7 +340,7 @@ def requests_kb() -> InlineKeyboardMarkup:
             text='Новые',
             callback_data=custom_cd('moderate_requests', keys=('page',)).new(
                 page=1,
-                row=1,
+                row=0,
                 column=0,
             ),
         ),
@@ -348,14 +348,14 @@ def requests_kb() -> InlineKeyboardMarkup:
             text='Отклоненные',
             callback_data=custom_cd('denied_requests', keys=('page',)).new(
                 page=1,
-                row=2,
+                row=1,
                 column=0,
             ),
         ),
         InlineKeyboardButton(
             text='Назад',
             callback_data=custom_cd('admin_menu').new(
-                row=3,
+                row=2,
                 column=0,
             ),
         ),
