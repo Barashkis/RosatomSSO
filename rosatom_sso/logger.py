@@ -43,7 +43,6 @@ def setup_logger():
     time_handler = TimedRotatingFileHandler(
         filename=Path(LOGS_DIR, 'logfile.log'),
         when='d',
-        interval=31,
         backupCount=31,
     )
     time_handler.namer = _namer
